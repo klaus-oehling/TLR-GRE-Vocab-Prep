@@ -29,7 +29,7 @@
   }
 
 /* ===== LEARN + REVISE ===== */
-#view-learn,#view-revise{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+#view-learn,#view-learn *,#view-revise,#view-revise *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 #view-learn,#view-learn,#view-revise,#view-revise{margin:0}
 #view-learn,#view-revise{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     color:var(--ink);background:linear-gradient(180deg,var(--bg1),var(--bg2)) fixed;min-height:100vh;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
@@ -205,12 +205,12 @@
 #view-learn .face.back,#view-revise .face.back{padding:20px}
 #view-learn .crow .lab,#view-revise .crow .lab{width:100%}}
 
-  @media (prefers-reduced-motion:reduce){#view-learn,#view-revise{transition:none!important}
+  @media (prefers-reduced-motion:reduce){#view-learn,#view-learn *,#view-revise,#view-revise *{transition:none!important}
 #view-learn .flip-inner,#view-revise .flip-inner{transition:none!important}
 #view-learn .floater,#view-revise .floater{animation:none!important}}
 
 /* ===== TRACK ===== */
-#view-track{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+#view-track,#view-track *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 #view-track{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
        background:var(--tk-bg);color:var(--tk-ink);font-size:16px;line-height:1.4}
 #view-track header{position:sticky;top:0;z-index:10;background:rgba(250,247,242,.97);
@@ -292,6 +292,11 @@
 #view-track .savenote.show{opacity:.92}
 #view-track footer{text-align:center;color:var(--tk-muted);font-size:12px;padding:20px}
 #view-track #fileIn{display:none}
+/* ---------- BOX SIZING ----------
+   The inherited sheets relied on a universal *{box-sizing:border-box}.
+   Overlays sit outside the scoped views, so restate it for them. */
+#peek,#peek *,#syncov,#syncov *,.appbar,.appbar *,.credit,.credit *{box-sizing:border-box}
+
 /* ---------- unified shell ---------- */
 html,body{margin:0}
 body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -959,6 +964,122 @@ html[data-theme="dark"] #view-learn .toggle.on .sw,html[data-theme="dark"] #view
 html[data-theme="dark"] #syncBox .syncsetup{background:#1f2629;border-color:var(--line)}
 html[data-theme="dark"] #syncBox .syncsetup code{background:#161c1f;color:#7fd3ab}
 
+/* ============================================================
+   MOBILE
+   The app bar alone ran to 700px on a 375px screen, which is why
+   phones zoomed out and everything looked unusable. Measured with
+   mobile_audit.js / the iframe probe at 320, 375 and 412px.
+   ============================================================ */
+body{overflow-x:clip}                     /* nothing may push the page sideways */
+*{-webkit-text-size-adjust:100%}
+
+@media (max-width:760px){
+  /* ---- app bar: two rows, icon-only tools, nav gets its own line ---- */
+  .appbar{flex-wrap:wrap;gap:8px;padding:8px 12px 9px}
+  .appbar .grow{display:none}
+  .appbar .count{display:none}
+  .appbar .brand{order:1;flex:1;min-width:0}
+  .tools{order:2;gap:6px;flex-shrink:0}
+  .modesw{order:3;width:100%;padding:3px}
+  .modesw button{flex:1;justify-content:center;padding:10px 6px;font-size:13px}
+
+  /* labels collapse to glyphs so five controls fit a narrow bar */
+  .tools button{min-width:40px;height:40px;padding:0 10px;font-size:0;line-height:0;
+    display:flex;align-items:center;justify-content:center}
+  .tools button::after{font-size:16px;line-height:1}
+  #backup::after{content:"⬇"}
+  #restore::after{content:"⬆"}
+  #export::after{content:"⤓"}
+  .tools .themebtn{font-size:15px;line-height:1}
+  .tools .themebtn::after{content:none}
+  .tools .syncchip{border-radius:10px;padding:0 10px}
+  .tools .syncchip::after{content:"☁"}
+
+  /* ---- comfortable spacing ---- */
+  #view-learn .wrap,#view-revise .wrap{padding:14px 12px 40px}
+  #view-track{padding-bottom:30px}
+  .panel{padding:16px;gap:16px}
+  .ctrls{padding:14px 14px 16px}
+  .crow{flex-direction:column;align-items:flex-start;gap:9px}
+  .crow .lab{width:100%}
+  .ctrlreset{position:static!important;align-self:flex-end;margin-top:2px;min-height:40px}
+  .ctrls .crow:first-child{padding-right:0!important}
+
+  /* ---- tap targets ---- */
+  button,.chip,.seg,.opt,a.btn{touch-action:manipulation}
+  #view-learn .seg,#view-revise .seg,#view-learn .tierbtn,#view-revise .seg.tierbtn{
+    min-height:42px;padding:10px 14px;font-size:13.5px}
+  #view-learn .daybtn,#view-revise .daybtn{width:44px;height:44px;font-size:20px}
+  #view-learn .dayinput,#view-revise .dayinput{height:44px;font-size:16px;width:84px}
+  #view-learn .syncbtn,#view-learn .ghostbtn,#view-revise .startbtn,
+  #view-learn .ctrlreset,#peekBox .peekbtn,#syncBox .peekbtn,#syncBox .ghostbtn{min-height:44px}
+  #view-learn .btn,#view-revise .btn{min-height:44px;font-size:14px}
+  #view-learn .opt,#view-revise .opt{min-height:52px;padding:13px 14px;font-size:14px}
+  #view-learn .nav{width:52px;height:52px;font-size:22px}
+  #view-learn .mbtn{min-height:50px;font-size:14px;padding:12px 8px}
+  #view-learn .wn{min-width:34px;height:34px;font-size:11.5px}
+  #view-learn #app.studying .wn{min-width:32px;height:32px}
+  #view-learn .navgrid{max-height:112px;gap:6px}
+  #view-learn #app.studying .navgrid{max-height:80px}
+  #view-learn .speaker,#view-revise .speaker,#peekBox .speaker,#peekBox .peekx{
+    width:40px;height:40px;font-size:16px}
+  .credit{padding:22px 16px 30px}
+  .credit a{display:inline-block;padding:6px 0}
+
+  /* inputs must be >=16px or iOS zooms in when they are focused */
+  input,select,textarea,#view-track input[type=search],#syncBox .sinput{font-size:16px!important}
+  #view-track input[type=search]{min-height:44px}
+
+  /* ---- flashcard ---- */
+  #view-learn #app.studying .flip-inner{min-height:clamp(300px,44vh,380px)}
+  #view-learn .face.back{padding:16px 15px}
+  #view-learn .bgrid{grid-template-columns:1fr;gap:12px}
+  #view-learn .word{font-size:clamp(34px,10vw,52px);padding:0 14px}
+  #view-learn .floater{display:none}          /* decorative, and they collided with the word */
+  #view-learn .coredef{font-size:15px}
+  #view-learn .subhead{gap:8px}
+  #view-learn .subhead h2{font-size:14px}
+  #view-learn .controls{gap:8px}
+
+  /* ---- track ---- */
+  #view-track .grid{grid-template-columns:1fr}
+  #view-track .word{padding:10px 12px;gap:8px}
+  #view-track .word .w{font-size:15.5px}
+  #view-track .toggle button{width:40px;height:40px;font-size:15px}
+  #view-track .filters{gap:10px 12px;padding:11px 12px}
+  #view-track .chip{min-height:38px;display:inline-flex;align-items:center;padding:0 13px}
+  #view-track .seg{width:100%}
+  #view-track .seg button{flex:1;min-height:42px}
+  #view-track .util{width:100%}
+  #view-track .util button{width:100%;min-height:42px}
+  #view-track header{padding:12px 12px 10px}
+  #view-track .stats{gap:10px}
+
+  /* ---- overlays ---- */
+  #peek,#syncov{padding:12px;align-items:flex-start}
+  #peekBox,#syncBox{max-height:92vh;padding:18px 16px 16px}
+  #peekBox .peekact,#syncBox .peekact{flex-direction:column}
+  #peekBox .bgrid{grid-template-columns:1fr}
+}
+
+@media (max-width:400px){
+  .modesw button{font-size:12px;padding:10px 4px}
+  .tools button{min-width:38px;height:38px;padding:0 8px}
+  #view-learn .wn{min-width:31px;height:31px}
+  .appbar .logo{min-width:38px;font-size:11px}
+  #view-learn .word{font-size:clamp(30px,9.5vw,44px)}
+}
+
+/* remaining tap targets found by the 375px probe */
+@media (max-width:760px){
+  #view-learn .back,#view-revise .back{min-height:40px;padding:8px 12px}
+  #view-track .fclear{min-height:38px;padding:0 14px}
+  #view-track .word .w{padding:9px 0;min-height:40px;display:flex;align-items:center}
+  #view-track .word{align-items:center}
+  /* word-nav squares stay compact on purpose: a 120-word day must still fit */
+  #view-learn .wn{min-width:34px;height:34px}
+}
+
 </style>
 </head>
 <body>
@@ -1083,6 +1204,11 @@ if(!store.__init){
     if(old&&old.knownMap)for(const k in old.knownMap){if(!store.know[k]&&(old.knownMap[k]==='know'||old.knownMap[k]==='dunno'))store.know[k]=old.knownMap[k];}
   }catch(e){}
   if(a||b)migrated={track:a,learn:b};
+  /* stamp imported data so it can propagate to other devices */
+  const now=Date.now();
+  store.tsK={};store.tsS={};
+  for(const k in store.know)store.tsK[k]=now;
+  for(const k in store.status)store.tsS[k]=now;
   persist();
 }
 if(!store.know)store.know={};
@@ -1097,6 +1223,14 @@ function persist(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e)
 if(!store.tsK)store.tsK={};
 if(!store.tsS)store.tsS={};
 if(!store.sync)store.sync={url:'',code:''};
+
+/* one-time repair: existing installs may hold values with no clock */
+(function(){
+  let fixed=0;const base=Date.now()-1;
+  for(const k in store.know)if(!store.tsK[k]){store.tsK[k]=base;fixed++;}
+  for(const k in store.status)if(!store.tsS[k]){store.tsS[k]=base;fixed++;}
+  if(fixed)persist();
+})();
 
 const knowOf=w=>store.know[w]||null;
 const statusOf=w=>store.status[w]||null;
@@ -1176,15 +1310,19 @@ function payload(){
   return{v:1,know:store.know,status:store.status,tsK:store.tsK,tsS:store.tsS,
          settings:S,updatedAt:Date.now()};
 }
-/* per-word last-write-wins; a missing entry with a newer clock means "deleted there" */
+/* Per-word last-write-wins.
+   A value that carries no clock still counts as a real edit, just the oldest
+   possible one — otherwise data imported from a backup or migrated from the old
+   files (which have no per-word clocks) compares 0 > 0 and never propagates. */
 function mergeRemote(r){
   let n=0;
   const pass=(map,ts,rmap,rts)=>{
     const keys=new Set([...Object.keys(rts||{}),...Object.keys(rmap||{})]);
     for(const w of keys){
-      const rt=(rts&&rts[w])||0, lt=ts[w]||0;
+      const rv=rmap&&rmap[w], lv=map[w];
+      const rt=(rts&&rts[w])||(rv?1:0);
+      const lt=ts[w]||(lv?1:0);
       if(rt>lt){
-        const rv=rmap&&rmap[w];
         if(rv)map[w]=rv;else delete map[w];
         ts[w]=rt;n++;
       }
@@ -1285,7 +1423,7 @@ function buildSyncForm(bx,ov,baked){
   const f2=el('div','sfield');
   f2.appendChild(el('label',null,'Your sync name'));
   const row=el('div','srow');
-  const c=el('input','sinput');c.type='text';c.placeholder='e.g. fulano-greprep-2026';c.value=store.sync.code||'';
+  const c=el('input','sinput');c.type='text';c.placeholder='e.g. klaus-gre-2026';c.value=store.sync.code||'';
   const gen=el('button','ghostbtn','Suggest');
   gen.onclick=()=>{c.value=randomCode();};
   row.appendChild(c);row.appendChild(gen);f2.appendChild(row);
@@ -1921,8 +2059,12 @@ $('fileIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return
       if(obj.settings)Object.assign(S,obj.settings);
     }else{  /* older know/dunno-only export */
       const km={};for(const k in obj){const v=String(obj[k]).toLowerCase();if(v==='know'||v==='dunno')km[k]=v;}
-      store.know=km;
+      store.know=km;store.tsK={};
     }
+    /* backups written before per-word clocks existed would otherwise never sync */
+    const now=Date.now();
+    for(const k in store.know)if(!store.tsK[k])store.tsK[k]=now;
+    for(const k in store.status)if(!store.tsS[k])store.tsS[k]=now;
     persist();updateTrackStats();renderTrack();route();
     const nk=Object.keys(store.know).length,ns=Object.keys(store.status).length;
     alert(`Restored — ${nk} known/unknown mark${nk===1?'':'s'} and ${ns} mastery mark${ns===1?'':'s'}.`);
