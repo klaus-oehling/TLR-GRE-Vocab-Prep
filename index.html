@@ -1035,7 +1035,6 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
   #view-learn .face.back{padding:16px 15px}
   #view-learn .bgrid{grid-template-columns:1fr;gap:12px}
   #view-learn .word{font-size:clamp(34px,10vw,52px);padding:0 14px}
-  #view-learn .floater{display:none}          /* decorative, and they collided with the word */
   #view-learn .coredef{font-size:15px}
   #view-learn .subhead{gap:8px}
   #view-learn .subhead h2{font-size:14px}
@@ -1079,6 +1078,37 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
   /* word-nav squares stay compact on purpose: a 120-word day must still fit */
   #view-learn .wn{min-width:34px;height:34px}
 }
+
+/* ============================================================
+   FLASHCARD ON MOBILE
+   The 3D flip relies on backface-visibility + preserve-3d. Mobile
+   engines flatten a 3D context as soon as a descendant sets
+   overflow, so both faces painted at once and the back showed
+   mirrored — the "everything upside down" effect. Below 760px the
+   card swaps faces with opacity instead: no 3D, nothing to flatten.
+   ============================================================ */
+@media (max-width:760px){
+  #view-learn .flip{perspective:none}
+  #view-learn .flip-inner{transform-style:flat;transition:none}
+  #view-learn .flip.flipped .flip-inner{transform:none}
+  #view-learn .face{
+    -webkit-backface-visibility:visible;backface-visibility:visible;
+    transition:opacity .16s ease;position:relative}
+  #view-learn .face.front{transform:none;opacity:1;z-index:1}
+  #view-learn .face.back{transform:none;opacity:0;pointer-events:none;z-index:2}
+  #view-learn .flip.flipped .face.front{opacity:0;pointer-events:none}
+  #view-learn .flip.flipped .face.back{opacity:1;pointer-events:auto}
+
+  /* floating synonyms stay — just sized for a phone */
+  #view-learn .floater{display:block;font-size:clamp(13px,3.8vw,19px);opacity:.9}
+  #view-learn .floater.f0{top:11%;left:6%}
+  #view-learn .floater.f1{top:14%;right:6%}
+  #view-learn .floater.f2{bottom:22%;left:7%}
+  #view-learn .floater.f3{bottom:15%;right:6%}
+}
+
+/* long lists: let the browser skip layout for rows that are off-screen */
+#view-track .word{content-visibility:auto;contain-intrinsic-size:auto 52px}
 
 </style>
 </head>
@@ -1913,7 +1943,29 @@ let fTiers=new Set();
 let saveTimer=null;
 function flash(){const n=$('savenote');if(!n)return;n.classList.add('show');
   clearTimeout(saveTimer);saveTimer=setTimeout(()=>n.classList.remove('show'),900);}
-function markTrack(w,val){setKnow(w,val);flash();updateTrackStats();renderTrack();}
+const ROWS=new Map();          /* word -> rendered row, so one mark touches one row */
+function paintRow(w){
+  const e=ROWS.get(w);if(!e)return;
+  const s=knowOf(w),st=statusOf(w);
+  e.className='word'+(s==='know'?' know':s==='dunno'?' dunno':'');
+  const y=e.querySelector('.y'),n=e.querySelector('.n');
+  y.classList.toggle('act',s==='know');
+  n.classList.toggle('act',s==='dunno');
+  const badges=e.querySelector('.badges');
+  const star=badges.querySelector('.mstr');
+  if(st==='mastered'&&!star){
+    const sp=document.createElement('span');sp.className='mstr';sp.title='Mastered in Learn';sp.textContent='★';
+    badges.insertBefore(sp,badges.querySelector('.tier'));
+  }else if(st!=='mastered'&&star)star.remove();
+}
+/* rebuilding 1750 rows on every tap made the phone feel frozen; only the
+   filters can change which rows belong, so anything else updates in place */
+function markTrack(w,val){
+  setKnow(w,val);flash();updateTrackStats();
+  const stillBelongs=tFilter==='all'||passes(WORDS.find(o=>o.w===w));
+  if(stillBelongs&&ROWS.has(w))paintRow(w);
+  else renderTrack();
+}
 function copyWord(w,btn){
   const done=()=>{btn.classList.add('done');btn.textContent='✓';
     setTimeout(()=>{btn.classList.remove('done');btn.textContent='⧉';},700);};
@@ -1968,6 +2020,7 @@ function openPeek(word){
   const db=el('button','peekbtn dunno'+(cur==='dunno'?' on':''),'✗ Don’t know it');
   kb.onclick=()=>{markTrack(w.w,'know');openPeek(word);};
   db.onclick=()=>{markTrack(w.w,'dunno');openPeek(word);};
+  /* keep the row behind the overlay in step without a full rebuild */
   act.appendChild(kb);act.appendChild(db);
   bx.appendChild(act);
 
@@ -1990,6 +2043,7 @@ function renderTrack(){
   const grid=$('grid');if(!grid)return;
   $('filters').classList.add('show');
   const list=currentList();
+  ROWS.clear();
   const frag=document.createDocumentFragment();
   for(const o of list){
     const w=o.w,s=knowOf(w),st=statusOf(w);
@@ -2014,6 +2068,7 @@ function renderTrack(){
     const cb=e.querySelector('.copy');cb.onclick=()=>copyWord(w,cb);
     e.querySelector('.y').onclick=()=>markTrack(w,'know');
     e.querySelector('.n').onclick=()=>markTrack(w,'dunno');
+    ROWS.set(w,e);
     frag.appendChild(e);
   }
   grid.innerHTML='';grid.appendChild(frag);
