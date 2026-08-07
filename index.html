@@ -1285,7 +1285,7 @@ function buildSyncForm(bx,ov,baked){
   const f2=el('div','sfield');
   f2.appendChild(el('label',null,'Your sync name'));
   const row=el('div','srow');
-  const c=el('input','sinput');c.type='text';c.placeholder='e.g. klaus-gre-2026';c.value=store.sync.code||'';
+  const c=el('input','sinput');c.type='text';c.placeholder='e.g. fulano-greprep-2026';c.value=store.sync.code||'';
   const gen=el('button','ghostbtn','Suggest');
   gen.onclick=()=>{c.value=randomCode();};
   row.appendChild(c);row.appendChild(gen);f2.appendChild(row);
