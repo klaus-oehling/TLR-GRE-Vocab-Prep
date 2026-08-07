@@ -981,12 +981,12 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
   .appbar .brand{order:1;flex:1;min-width:0}
   .tools{order:2;gap:6px;flex-shrink:0}
   .modesw{order:3;width:100%;padding:3px}
-  .modesw button{flex:1;justify-content:center;padding:10px 6px;font-size:13px}
+  .modesw button{flex:1;justify-content:center;padding:8px 6px;font-size:12.5px}
 
   /* labels collapse to glyphs so five controls fit a narrow bar */
-  .tools button{min-width:40px;height:40px;padding:0 10px;font-size:0;line-height:0;
+  .tools button{min-width:34px;height:34px;padding:0 7px;font-size:0;line-height:0;
     display:flex;align-items:center;justify-content:center}
-  .tools button::after{font-size:16px;line-height:1}
+  .tools button::after{font-size:14px;line-height:1}
   #backup::after{content:"⬇"}
   #restore::after{content:"⬆"}
   #export::after{content:"⤓"}
@@ -1008,27 +1008,27 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
   /* ---- tap targets ---- */
   button,.chip,.seg,.opt,a.btn{touch-action:manipulation}
   #view-learn .seg,#view-revise .seg,#view-learn .tierbtn,#view-revise .seg.tierbtn{
-    min-height:42px;padding:10px 14px;font-size:13.5px}
-  #view-learn .daybtn,#view-revise .daybtn{width:44px;height:44px;font-size:20px}
-  #view-learn .dayinput,#view-revise .dayinput{height:44px;font-size:16px;width:84px}
+    min-height:36px;padding:7px 12px;font-size:13px}
+  #view-learn .daybtn,#view-revise .daybtn{width:38px;height:38px;font-size:18px}
+  #view-learn .dayinput,#view-revise .dayinput{height:38px;font-size:16px;width:74px}
   #view-learn .syncbtn,#view-learn .ghostbtn,#view-revise .startbtn,
-  #view-learn .ctrlreset,#peekBox .peekbtn,#syncBox .peekbtn,#syncBox .ghostbtn{min-height:44px}
-  #view-learn .btn,#view-revise .btn{min-height:44px;font-size:14px}
-  #view-learn .opt,#view-revise .opt{min-height:52px;padding:13px 14px;font-size:14px}
-  #view-learn .nav{width:52px;height:52px;font-size:22px}
-  #view-learn .mbtn{min-height:50px;font-size:14px;padding:12px 8px}
-  #view-learn .wn{min-width:34px;height:34px;font-size:11.5px}
+  #view-learn .ctrlreset,#peekBox .peekbtn,#syncBox .peekbtn,#syncBox .ghostbtn{min-height:40px}
+  #view-learn .btn,#view-revise .btn{min-height:38px;font-size:13.5px}
+  #view-learn .opt,#view-revise .opt{min-height:44px;padding:10px 12px;font-size:13.5px}
+  #view-learn .nav{width:44px;height:44px;font-size:19px}
+  #view-learn .mbtn{min-height:44px;font-size:13.5px;padding:10px 8px}
+  #view-learn .wn{min-width:31px;height:31px;font-size:11px}
   #view-learn #app.studying .wn{min-width:32px;height:32px}
   #view-learn .navgrid{max-height:112px;gap:6px}
   #view-learn #app.studying .navgrid{max-height:80px}
   #view-learn .speaker,#view-revise .speaker,#peekBox .speaker,#peekBox .peekx{
-    width:40px;height:40px;font-size:16px}
+    width:34px;height:34px;font-size:14px}
   .credit{padding:22px 16px 30px}
   .credit a{display:inline-block;padding:6px 0}
 
   /* inputs must be >=16px or iOS zooms in when they are focused */
   input,select,textarea,#view-track input[type=search],#syncBox .sinput{font-size:16px!important}
-  #view-track input[type=search]{min-height:44px}
+  #view-track input[type=search]{min-height:38px}
 
   /* ---- flashcard ---- */
   #view-learn #app.studying .flip-inner{min-height:clamp(300px,44vh,380px)}
@@ -1044,13 +1044,13 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
   #view-track .grid{grid-template-columns:1fr}
   #view-track .word{padding:10px 12px;gap:8px}
   #view-track .word .w{font-size:15.5px}
-  #view-track .toggle button{width:40px;height:40px;font-size:15px}
+  #view-track .toggle button{width:34px;height:34px;font-size:14px}
   #view-track .filters{gap:10px 12px;padding:11px 12px}
-  #view-track .chip{min-height:38px;display:inline-flex;align-items:center;padding:0 13px}
+  #view-track .chip{min-height:32px;display:inline-flex;align-items:center;padding:0 11px}
   #view-track .seg{width:100%}
-  #view-track .seg button{flex:1;min-height:42px}
+  #view-track .seg button{flex:1;min-height:36px}
   #view-track .util{width:100%}
-  #view-track .util button{width:100%;min-height:42px}
+  #view-track .util button{width:100%;min-height:36px}
   #view-track header{padding:12px 12px 10px}
   #view-track .stats{gap:10px}
 
@@ -1071,9 +1071,9 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
 
 /* remaining tap targets found by the 375px probe */
 @media (max-width:760px){
-  #view-learn .back,#view-revise .back{min-height:40px;padding:8px 12px}
-  #view-track .fclear{min-height:38px;padding:0 14px}
-  #view-track .word .w{padding:9px 0;min-height:40px;display:flex;align-items:center}
+  #view-learn .back,#view-revise .back{min-height:34px;padding:6px 10px}
+  #view-track .fclear{min-height:32px;padding:0 12px}
+  #view-track .word .w{padding:7px 0;min-height:36px;display:flex;align-items:center}
   #view-track .word{align-items:center}
   /* word-nav squares stay compact on purpose: a 120-word day must still fit */
   #view-learn .wn{min-width:34px;height:34px}
@@ -1109,6 +1109,44 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
 
 /* long lists: let the browser skip layout for rows that are off-screen */
 #view-track .word{content-visibility:auto;contain-intrinsic-size:auto 52px}
+
+/* ============================================================
+   PROGRESS RINGS ON MOBILE
+   .ringwrap had no flex-shrink:0, so the flex row squashed the
+   wrapper while the SVG inside kept its fixed 118px. The circle
+   then spilled over the stats beside it, and .pct (positioned
+   against the squashed wrapper) no longer lined up with the SVG.
+   Stacking the panel removes the competition entirely.
+   ============================================================ */
+#view-learn .ringwrap,#view-revise .ringwrap{flex-shrink:0}
+
+@media (max-width:760px){
+  .panel{flex-direction:column;align-items:center;text-align:center;gap:14px}
+  #view-learn .ringwrap,#view-revise .ringwrap{width:auto;align-items:center}
+  /* the SVG carries width/height attributes; pin the box to match exactly */
+  #view-learn .ring,#view-revise .ring{width:104px;height:104px;flex-shrink:0;position:relative}
+  #view-learn .ring svg,#view-revise .ring svg{width:104px;height:104px;display:block}
+  #view-learn .ring .pct,#view-revise .ring .pct{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;line-height:1.1;
+    padding:0 8px}
+  #view-learn .ring .pct b,#view-revise .ring .pct b{font-size:21px;letter-spacing:-.02em}
+  #view-learn .ring .pct span,#view-revise .ring .pct span{font-size:9px;letter-spacing:.06em}
+  #view-learn .ringleg{flex-direction:row;gap:14px;justify-content:center;flex-wrap:wrap}
+  #view-learn .panel>div,#view-revise .panel>div{min-width:0;width:100%}
+  .plabel{text-align:center}
+  .pstats{justify-content:center;gap:8px}
+  .pstat{min-width:0;flex:1 1 calc(50% - 8px);padding:10px 8px}
+  .pstat b{font-size:19px}
+  .pstat span{font-size:9.5px}
+  /* the mini rings on day cards carry their own size, leave them alone */
+  #view-learn .mini,#view-learn .mini svg{width:44px;height:44px}
+}
+@media (max-width:400px){
+  #view-learn .ring,#view-revise .ring,
+  #view-learn .ring svg,#view-revise .ring svg{width:96px;height:96px}
+  #view-learn .ring .pct b,#view-revise .ring .pct b{font-size:19px}
+}
 
 </style>
 </head>
