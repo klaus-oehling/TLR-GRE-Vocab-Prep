@@ -948,6 +948,17 @@ html[data-theme="dark"] #view-revise .seg.tierbtn.on{
 html[data-theme="dark"] #view-learn .toggle.on .sw,html[data-theme="dark"] #view-revise .toggle.on .sw{
   background:var(--accent)}
 
+/* sync: "not set up yet" explainer */
+#syncBox .syncsetup{background:var(--line2);border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;margin-bottom:14px}
+#syncBox .syncsetup b{font-size:13.5px;color:var(--ink)}
+#syncBox .syncsetup p{margin:8px 0 0;font-size:12.5px;line-height:1.55;color:var(--muted)}
+#syncBox .syncsetup p.muted{color:var(--faint)}
+#syncBox .syncsetup code{background:var(--card);border:1px solid var(--line);border-radius:5px;
+  padding:1px 5px;font-size:11.5px;font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--accent-d)}
+html[data-theme="dark"] #syncBox .syncsetup{background:#1f2629;border-color:var(--line)}
+html[data-theme="dark"] #syncBox .syncsetup code{background:#161c1f;color:#7fd3ab}
+
 </style>
 </head>
 <body>
@@ -1051,7 +1062,7 @@ const WORDS=[{"w":"abate","t":1,"g":1,"b":1,"d":"To become less active, less int
    │  e.g. 'https://vocab-sync.yourname.workers.dev'                      │
    │  Leave empty to keep everything on this device only.                 │
    └──────────────────────────────────────────────────────────────────────┘ */
-const SYNC_SERVER='https://vocab-sync.oehlingklaus.workers.dev/';
+const SYNC_SERVER='https://vocab-sync.oehlingklaus.workers.dev';
 
 const POSFULL={'v.':'verb','n.':'noun','adj.':'adjective','adv.':'adverb'};
 const KEY='vocab_unified_v1';
@@ -1230,14 +1241,45 @@ function randomCode(){
 }
 function openSync(){
   const ov=$('syncov'),bx=$('syncBox');
+  const configured=!!serverUrl();          /* baked in, or entered by hand earlier */
   const baked=!!SYNC_SERVER;
   bx.innerHTML='';
   const hd=el('div','peekhead');
   const h=el('div','peekword');h.appendChild(el('h3',null,'Sync across devices'));
-  h.appendChild(el('div','synclead','Type the same name on every device and your progress follows you around.'));
+  h.appendChild(el('div','synclead',configured
+    ? 'Type the same name on every device and your progress follows you around.'
+    : 'Sync needs a one-time setup before it can be switched on.'));
   hd.appendChild(h);
   const x=el('button','peekx','✕');x.onclick=()=>ov.classList.remove('show');hd.appendChild(x);
   bx.appendChild(hd);bx.appendChild(el('div','brule'));
+
+  /* nothing to fill in until a server exists — explain rather than show a blank box */
+  if(!configured){
+    const note=el('div','syncsetup');
+    note.innerHTML=
+      '<b>Not set up yet</b>'+
+      '<p>Your progress is saved safely on this device already. Sync is only needed if you '+
+      'want the same progress on your phone and your computer.</p>'+
+      '<p>Turning it on takes about five minutes and is done once: create a free Cloudflare '+
+      'account, deploy the small <code>worker.js</code> file, and paste its address into '+
+      '<code>SYNC_SERVER</code> at the top of this app’s HTML file. Full steps are in '+
+      '<b>SETUP.md</b>, Part 2.</p>'+
+      '<p class="muted">Until then, use <b>⬇ Backup</b> and <b>⬆ Restore</b> in the top bar to move '+
+      'progress between devices by hand.</p>';
+    bx.appendChild(note);
+    const adv=el('button','linkbtn','I already have a sync server address');
+    const wrap=el('div');wrap.style.display='none';
+    adv.onclick=()=>{wrap.style.display='';adv.style.display='none';};
+    bx.appendChild(adv);bx.appendChild(wrap);
+    buildSyncForm(wrap,ov,false);
+    ov.classList.add('show');
+    return;
+  }
+  buildSyncForm(bx,ov,baked);
+  ov.classList.add('show');
+}
+
+function buildSyncForm(bx,ov,baked){
 
   /* the name is the only thing you normally touch */
   const f2=el('div','sfield');
@@ -1268,7 +1310,8 @@ function openSync(){
 
   const stat=el('div','sstat');
   stat.textContent=syncReady()?(SYNC.msg||'Connected.')
-    :(serverUrl()?'Not connected yet — pick a name above.':'No sync server set up yet. See SETUP.md.');
+    :(serverUrl()?'Not connected yet — pick a name above and press Connect.'
+                 :'Enter the address of the sync server you deployed, then pick a name.');
   bx.appendChild(stat);
 
   const act=el('div','peekact');
@@ -1284,7 +1327,7 @@ function openSync(){
       await syncPull({quiet:true});
       await syncPush();
       stat.textContent='Connected. '+(SYNC.msg||'');
-      updateTrackStats();renderTrack();renderHome();
+      updateTrackStats();renderTrack();route();
       setTimeout(()=>ov.classList.remove('show'),700);
     }catch(e){setSyncState('err',e.message);stat.textContent='Could not connect: '+e.message;}
   };
@@ -1292,7 +1335,6 @@ function openSync(){
   off.onclick=()=>{store.sync={url:'',code:''};SYNC.key='';persist();setSyncState('off');
     stat.textContent='Disconnected. Your progress stays on this device.';};
   act.appendChild(save);act.appendChild(off);bx.appendChild(act);
-  ov.classList.add('show');
 }
 
 /* ---------- mode switching ---------- */
