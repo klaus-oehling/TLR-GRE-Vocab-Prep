@@ -978,6 +978,11 @@ html[data-theme="dark"] #view-track .toggle button.fresh.act{background:var(--t1
 #view-learn .sechead .sub,#view-revise .sechead .sub{max-width:70ch;line-height:1.5}
 @media (max-width:760px){.tabintro{font-size:12.5px}}
 
+/* progress bar: known / newly learned / to learn / unmarked */
+#view-track .bar .l{background:var(--tk-t1)}
+#view-track .bar .k{background:var(--tk-know)}
+#view-track .bar .d{background:var(--tk-dunno)}
+
 /* ============================================================
    MOBILE
    The app bar alone ran to 700px on a 375px screen, which is why
@@ -1193,11 +1198,11 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
 <div id="view-track" style="display:none">
 <header>
   <div class="tabintro">Your complete word list. Mark what you already know (✓) and what you still need (✗) — Learn and Revise both work from these marks. Use ✦ to flag a word as <b>newly learned</b> so you can revise it separately from words you have known for years. Tap any word to see its flashcard.</div><div class="sub" id="sub">1,750 words · sources 🎧/G/M/B · priority tiers 1/2/3/4</div>
-  <div class="bar"><div class="k" id="barK" style="width:0"></div><div class="d" id="barD" style="width:0"></div></div>
+  <div class="bar"><div class="k" id="barK" style="width:0"></div><div class="l" id="barL" style="width:0"></div><div class="d" id="barD" style="width:0"></div></div>
   <div class="stats">
-    <div class="stat"><span class="dot" style="background:var(--know)"></span><b id="cKnow">0</b> <span class="n">known</span></div>
-    <div class="stat"><span class="dot" style="background:var(--dunno)"></span><b id="cDunno">0</b> <span class="n">to learn</span></div>
-    <div class="stat"><span class="dot" style="background:var(--line)"></span><b id="cLeft">1750</b> <span class="n">unmarked</span></div>
+    <div class="stat"><span class="dot" style="background:var(--tk-know)"></span><b id="cKnow">0</b> <span class="n">known</span></div>
+    <div class="stat"><span class="dot" style="background:var(--tk-t1)"></span><b id="cLearned">0</b> <span class="n">learned</span></div><div class="stat"><span class="dot" style="background:var(--tk-dunno)"></span><b id="cDunno">0</b> <span class="n">to learn</span></div>
+    <div class="stat"><span class="dot" style="background:var(--tk-line)"></span><b id="cLeft">1750</b> <span class="n">unmarked</span></div>
   </div>
   <div class="controls">
     <div class="seg" id="seg">
@@ -1948,9 +1953,11 @@ function renderRevise(){
   const allKnown=WORDS.filter(w=>knowOf(w.w)==='know');
   const noCard=allKnown.filter(w=>rTierOk(w.t)&&!hasContent(w)).length;
 
-  const head=el('div','sechead');head.appendChild(el('h2',null,'Revise'));
-  head.appendChild(el('span','sub','Quiz yourself on the words you have already marked as known, to make sure they stayed known.'));
-  a.appendChild(head);
+  const intro=el('div','tabintro');
+  intro.innerHTML='Quiz yourself on words you have already marked as known, to catch any that are '
+    +'slipping. Choose your tiers and how many questions you want, or narrow it to <b>newly learned</b> '
+    +'words so you are not asked about ones you have known for years.';
+  a.appendChild(intro);
 
   const panel=el('div','panel');
   const ring=el('div','ring');
@@ -2156,7 +2163,7 @@ function renderTrack(){
     const wb=e.querySelector('.w');
     wb.textContent=w;
     wb.onclick=()=>openPeek(w);
-    e.querySelector('.fresh').onclick=()=>{setFresh(w,!freshOf(w));paintRow(w);flash();};
+    e.querySelector('.fresh').onclick=()=>{setFresh(w,!freshOf(w));paintRow(w);updateTrackStats();flash();};
     e.querySelector('.y').onclick=()=>markTrack(w,'know');
     e.querySelector('.n').onclick=()=>markTrack(w,'dunno');
     ROWS.set(w,e);
@@ -2169,10 +2176,20 @@ function renderTrack(){
   $('fcount').textContent=list.length+' shown';
 }
 function updateTrackStats(){
-  let k=0,d=0;for(const o of WORDS){const s=knowOf(o.w);if(s==='know')k++;else if(s==='dunno')d++;}
-  const left=WORDS.length-k-d;
-  $('cKnow').textContent=k;$('cDunno').textContent=d;$('cLeft').textContent=left;
-  $('barK').style.width=(k/WORDS.length*100)+'%';$('barD').style.width=(d/WORDS.length*100)+'%';
+  /* a known word that is flagged newly learned counts as "learned", not "known" */
+  let known=0,learned=0,dunno=0;
+  for(const o of WORDS){
+    const s=knowOf(o.w);
+    if(s==='know'){ freshOf(o.w)?learned++:known++; }
+    else if(s==='dunno')dunno++;
+  }
+  const left=WORDS.length-known-learned-dunno,T=WORDS.length;
+  $('cKnow').textContent=known;
+  const cl=$('cLearned');if(cl)cl.textContent=learned;
+  $('cDunno').textContent=dunno;$('cLeft').textContent=left;
+  $('barK').style.width=(known/T*100)+'%';
+  const bl=$('barL');if(bl)bl.style.width=(learned/T*100)+'%';
+  $('barD').style.width=(dunno/T*100)+'%';
 }
 
 /* ---------- track wiring ---------- */
