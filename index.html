@@ -964,6 +964,20 @@ html[data-theme="dark"] #view-learn .toggle.on .sw,html[data-theme="dark"] #view
 html[data-theme="dark"] #syncBox .syncsetup{background:#1f2629;border-color:var(--line)}
 html[data-theme="dark"] #syncBox .syncsetup code{background:#161c1f;color:#7fd3ab}
 
+/* ---------- newly-learned flag ---------- */
+#view-track .toggle button.fresh{color:var(--tk-muted);font-size:13px}
+#view-track .toggle button.fresh:hover{background:var(--t1bg);color:var(--t1);border-color:var(--t1line)}
+#view-track .toggle button.fresh.act{background:var(--t1);border-color:var(--t1);color:#1b1408}
+html[data-theme="dark"] #view-track .toggle button.fresh{color:var(--tk-muted)}
+html[data-theme="dark"] #view-track .toggle button.fresh:hover{background:#332c14;color:#e8cd7a;border-color:#5b4d20}
+html[data-theme="dark"] #view-track .toggle button.fresh.act{background:var(--t1);border-color:var(--t1);color:#1b1408}
+
+/* ---------- per-tab intro copy ---------- */
+.tabintro{font-size:13px;line-height:1.55;color:var(--tk-muted);margin:0 0 10px;max-width:70ch}
+.tabintro b{color:var(--tk-ink);font-weight:700}
+#view-learn .sechead .sub,#view-revise .sechead .sub{max-width:70ch;line-height:1.5}
+@media (max-width:760px){.tabintro{font-size:12.5px}}
+
 /* ============================================================
    MOBILE
    The app bar alone ran to 700px on a 375px screen, which is why
@@ -1178,7 +1192,7 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
 
 <div id="view-track" style="display:none">
 <header>
-  <div class="sub" id="sub">1,750 words · sources 🎧/G/M/B · priority tiers 1/2/3/4</div>
+  <div class="tabintro">Your complete word list. Mark what you already know (✓) and what you still need (✗) — Learn and Revise both work from these marks. Use ✦ to flag a word as <b>newly learned</b> so you can revise it separately from words you have known for years. Tap any word to see its flashcard.</div><div class="sub" id="sub">1,750 words · sources 🎧/G/M/B · priority tiers 1/2/3/4</div>
   <div class="bar"><div class="k" id="barK" style="width:0"></div><div class="d" id="barD" style="width:0"></div></div>
   <div class="stats">
     <div class="stat"><span class="dot" style="background:var(--know)"></span><b id="cKnow">0</b> <span class="n">known</span></div>
@@ -1290,6 +1304,8 @@ function persist(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e)
 /* per-word change clocks so two devices can be merged without losing edits */
 if(!store.tsK)store.tsK={};
 if(!store.tsS)store.tsS={};
+if(!store.fresh)store.fresh={};   /* words only recently learned */
+if(!store.tsF)store.tsF={};
 if(!store.sync)store.sync={url:'',code:''};
 
 /* one-time repair: existing installs may hold values with no clock */
@@ -1297,11 +1313,16 @@ if(!store.sync)store.sync={url:'',code:''};
   let fixed=0;const base=Date.now()-1;
   for(const k in store.know)if(!store.tsK[k]){store.tsK[k]=base;fixed++;}
   for(const k in store.status)if(!store.tsS[k]){store.tsS[k]=base;fixed++;}
+  for(const k in store.fresh)if(!store.tsF[k]){store.tsF[k]=base;fixed++;}
   if(fixed)persist();
 })();
 
 const knowOf=w=>store.know[w]||null;
 const statusOf=w=>store.status[w]||null;
+const freshOf=w=>!!store.fresh[w];
+function setFresh(w,val){
+  if(val)store.fresh[w]=1;else delete store.fresh[w];
+  store.tsF[w]=Date.now();persist();syncSoon();}
 function setStatus(w,st){if(st==null)delete store.status[w];else store.status[w]=st;
   store.tsS[w]=Date.now();persist();syncSoon();}
 function setKnow(w,val){if(store.know[w]===val)delete store.know[w];else store.know[w]=val;
@@ -1375,7 +1396,8 @@ async function deriveKey(code){
 }
 function endpoint(){return serverUrl().replace(/\/+$/,'')+'/s/'+SYNC.key;}
 function payload(){
-  return{v:1,know:store.know,status:store.status,tsK:store.tsK,tsS:store.tsS,
+  return{v:1,know:store.know,status:store.status,fresh:store.fresh,
+         tsK:store.tsK,tsS:store.tsS,tsF:store.tsF,
          settings:S,updatedAt:Date.now()};
 }
 /* Per-word last-write-wins.
@@ -1398,6 +1420,7 @@ function mergeRemote(r){
   };
   pass(store.know,store.tsK,r.know,r.tsK);
   pass(store.status,store.tsS,r.status,r.tsS);
+  pass(store.fresh,store.tsF,r.fresh,r.tsF);
   return n;
 }
 async function syncPull({quiet}={}){
@@ -1581,6 +1604,12 @@ function renderHome(){
     app.appendChild(note);migrated=null;
   }
 
+  const intro=el('div','tabintro');
+  intro.innerHTML='Flashcards for the words you still need. Pick your tiers, split them across however '
+    +'many days you have, then study and quiz each day. Marking a word <b>mastered</b> here can be pushed '
+    +'back to Track with <b>Update tracker</b>, which also flags it as newly learned.';
+  app.appendChild(intro);
+
   const c=counts(active);
   const mFrac=c.total?c.m/c.total*100:0, lFrac=c.total?c.l/c.total*100:0;
   const pct=Math.round(mFrac), lpct=Math.round(lFrac);
@@ -1645,8 +1674,12 @@ function renderHome(){
   sync.onclick=()=>{
     const done=WORDS.filter(w=>statusOf(w.w)==='mastered'&&knowOf(w.w)!=='know');
     if(!done.length){alert('Nothing to sync — every word you’ve mastered is already marked known.');return;}
-    if(!confirm(`Mark ${done.length} mastered word${done.length===1?'':'s'} as “known” in Track?`))return;
-    done.forEach(w=>{store.know[w.w]='know';});persist();
+    if(!confirm(`Mark ${done.length} mastered word${done.length===1?'':'s'} as “known” in Track?\n\n`
+      +`They will also be flagged “newly learned”, so you can revise them separately.`))return;
+    const now=Date.now();
+    done.forEach(w=>{store.know[w.w]='know';store.tsK[w.w]=now;
+                     store.fresh[w.w]=1;store.tsF[w.w]=now;});
+    persist();
     updateTrackStats();renderTrack();renderHome();
     alert(`Updated ${done.length} word${done.length===1?'':'s'} to “known”.`);
   };
@@ -1902,7 +1935,12 @@ if(!Array.isArray(S.rtiers))S.rtiers=[1,2,3,4];
 if(!S.rsize)S.rsize=20;
 const rapp=()=>$('rapp');
 function rTierOk(t){return !S.rtiers.length||S.rtiers.indexOf(t)>=0;}
-function reviseePool(){return WORDS.filter(w=>knowOf(w.w)==='know'&&rTierOk(w.t)&&hasContent(w));}
+function freshCount(){let c=0;for(const k in store.fresh)if(store.know[k]==='know')c++;return c;}
+function reviseePool(){
+  let ws=WORDS.filter(w=>knowOf(w.w)==='know'&&rTierOk(w.t)&&hasContent(w));
+  if(S.freshOnly)ws=ws.filter(w=>freshOf(w.w));
+  return ws;
+}
 
 function renderRevise(){
   const a=rapp();a.innerHTML='';
@@ -1939,6 +1977,23 @@ function renderRevise(){
   if(!S.rtiers.length)r1.appendChild(el('span','dayhint','none selected — showing all tiers'));
   ctrls.appendChild(r1);
 
+  /* newly-learned filter, mirroring the unknown-only toggle in Learn */
+  const rf=el('div','crow');rf.appendChild(el('div','lab','Which words'));
+  const nFresh=freshCount();
+  const canFresh=nFresh>0;
+  const ftg=el('div','toggle'+(S.freshOnly?' on':'')+(canFresh?'':' disabled'));
+  ftg.innerHTML='<span class="sw"></span>';
+  ftg.appendChild(el('span',null,'Only newly learned words'));
+  ftg.onclick=()=>{if(!canFresh){alert('No words are flagged “newly learned” yet.\n\n'
+      +'They get flagged automatically when you press “Update tracker” in Learn, '
+      +'or you can tap the ✦ button beside any word in Track.');return;}
+    S.freshOnly=!S.freshOnly;persist();renderRevise();};
+  rf.appendChild(ftg);
+  rf.appendChild(el('div','filestat',canFresh
+    ? `${nFresh} of your known words are flagged newly learned`
+    : 'Nothing flagged yet — use ✦ in Track, or “Update tracker” in Learn.'));
+  ctrls.appendChild(rf);
+
   const r2=el('div','crow');r2.appendChild(el('div','lab','Questions'));
   const dsel=el('div','daysel');
   [10,20,50,'All'].forEach(n=>{
@@ -1946,13 +2001,16 @@ function renderRevise(){
     const b=el('button','seg tierbtn'+(S.rsize===val?' on':''),String(n));
     b.onclick=()=>{S.rsize=val;persist();renderRevise();};
     dsel.appendChild(b);});
-  dsel.appendChild(el('span','dayhint',pool.length?`${Math.min(S.rsize||pool.length,pool.length)} of ${pool.length} known words, picked at random`:'nothing to revise yet'));
+  dsel.appendChild(el('span','dayhint',pool.length
+    ?`${Math.min(S.rsize||pool.length,pool.length)} of ${pool.length} ${S.freshOnly?'newly learned':'known'} words, picked at random`
+    :'nothing to revise yet'));
   r2.appendChild(dsel);ctrls.appendChild(r2);
   a.appendChild(ctrls);
 
   if(!pool.length){
-    a.appendChild(el('div','empty',allKnown.length
-      ? 'No known words in these tiers. Pick more tiers above.'
+    a.appendChild(el('div','empty',
+      S.freshOnly ? 'No newly learned words in these tiers. Turn the filter off or pick more tiers.'
+      : allKnown.length ? 'No known words in these tiers. Pick more tiers above.'
       : 'Nothing to revise yet — mark some words as known in Track first.'));
     return;
   }
@@ -1986,9 +2044,10 @@ function paintRow(w){
   const e=ROWS.get(w);if(!e)return;
   const s=knowOf(w),st=statusOf(w);
   e.className='word'+(s==='know'?' know':s==='dunno'?' dunno':'');
-  const y=e.querySelector('.y'),n=e.querySelector('.n');
+  const y=e.querySelector('.y'),n=e.querySelector('.n'),fr=e.querySelector('.fresh');
   y.classList.toggle('act',s==='know');
   n.classList.toggle('act',s==='dunno');
+  if(fr)fr.classList.toggle('act',freshOf(w));
   const badges=e.querySelector('.badges');
   const star=badges.querySelector('.mstr');
   if(st==='mastered'&&!star){
@@ -2004,13 +2063,6 @@ function markTrack(w,val){
   if(stillBelongs&&ROWS.has(w))paintRow(w);
   else renderTrack();
 }
-function copyWord(w,btn){
-  const done=()=>{btn.classList.add('done');btn.textContent='✓';
-    setTimeout(()=>{btn.classList.remove('done');btn.textContent='⧉';},700);};
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(w).then(done).catch(()=>fb(w,done));
-  else fb(w,done);}
-function fb(w,done){const t=document.createElement('textarea');t.value=w;t.style.position='fixed';t.style.opacity='0';
-  document.body.appendChild(t);t.focus();t.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(t);}
 /* ---------- peek: open a word's flashcard back from the tracker ---------- */
 function openPeek(word){
   const w=WORDS.find(x=>x.w===word);if(!w)return;
@@ -2097,13 +2149,14 @@ function renderTrack(){
     e.innerHTML='<button class="w'+(hasContent(o)?'':' nocard')+'" title="'+
       (hasContent(o)?'Show the flashcard':'No flashcard written yet')+'"></button>'+
       '<span class="badges">'+b+'</span>'+
-      '<span class="toggle"><button class="copy" title="Copy word">⧉</button>'+
+      '<span class="toggle">'+
+      '<button class="fresh'+(freshOf(w)?' act':'')+'" title="Newly learned — revise these separately">✦</button>'+
       '<button class="y'+(s==='know'?' act':'')+'" title="I know it">✓</button>'+
       '<button class="n'+(s==='dunno'?' act':'')+'" title="Don\'t know">✗</button></span>';
     const wb=e.querySelector('.w');
     wb.textContent=w;
     wb.onclick=()=>openPeek(w);
-    const cb=e.querySelector('.copy');cb.onclick=()=>copyWord(w,cb);
+    e.querySelector('.fresh').onclick=()=>{setFresh(w,!freshOf(w));paintRow(w);flash();};
     e.querySelector('.y').onclick=()=>markTrack(w,'know');
     e.querySelector('.n').onclick=()=>markTrack(w,'dunno');
     ROWS.set(w,e);
@@ -2139,7 +2192,8 @@ $('reset').onclick=()=>{if(confirm('Clear all known/unknown marks? (Mastery prog
 $('backup').onclick=()=>{
   download('tlr_gre_vocab_backup.json',JSON.stringify({
     app:'vocabularize',v:1,savedAt:new Date().toISOString(),
-    know:store.know,status:store.status,tsK:store.tsK,tsS:store.tsS,settings:S}, null, 1));
+    know:store.know,status:store.status,fresh:store.fresh,
+    tsK:store.tsK,tsS:store.tsS,tsF:store.tsF,settings:S}, null, 1));
   flash();
 };
 $('restore').onclick=()=>$('fileIn').click();
@@ -2147,8 +2201,8 @@ $('fileIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return
   r.onload=()=>{try{
     const obj=JSON.parse(r.result)||{};
     if(obj.know||obj.status){
-      store.know=obj.know||{};store.status=obj.status||{};
-      store.tsK=obj.tsK||{};store.tsS=obj.tsS||{};
+      store.know=obj.know||{};store.status=obj.status||{};store.fresh=obj.fresh||{};
+      store.tsK=obj.tsK||{};store.tsS=obj.tsS||{};store.tsF=obj.tsF||{};
       if(obj.settings)Object.assign(S,obj.settings);
     }else{  /* older know/dunno-only export */
       const km={};for(const k in obj){const v=String(obj[k]).toLowerCase();if(v==='know'||v==='dunno')km[k]=v;}
@@ -2158,6 +2212,7 @@ $('fileIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return
     const now=Date.now();
     for(const k in store.know)if(!store.tsK[k])store.tsK[k]=now;
     for(const k in store.status)if(!store.tsS[k])store.tsS[k]=now;
+    for(const k in store.fresh)if(!store.tsF[k])store.tsF[k]=now;
     persist();updateTrackStats();renderTrack();route();
     const nk=Object.keys(store.know).length,ns=Object.keys(store.status).length;
     alert(`Restored — ${nk} known/unknown mark${nk===1?'':'s'} and ${ns} mastery mark${ns===1?'':'s'}.`);
