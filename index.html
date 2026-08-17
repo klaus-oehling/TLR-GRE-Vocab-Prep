@@ -983,6 +983,34 @@ html[data-theme="dark"] #view-track .toggle button.fresh.act{background:var(--t1
 #view-track .bar .k{background:var(--tk-know)}
 #view-track .bar .d{background:var(--tk-dunno)}
 
+/* ---------- star / favourite ---------- */
+.starbtn{border:1px solid var(--line);background:#fff;color:#c9c4bb;border-radius:9px;
+  width:34px;height:34px;font-size:15px;cursor:pointer;font-family:inherit;line-height:1;
+  flex-shrink:0;transition:.12s}
+.starbtn:hover{color:var(--t1);border-color:var(--t1line);background:var(--t1bg)}
+.starbtn.on{background:var(--t1);border-color:var(--t1);color:#fff}
+html[data-theme="dark"] .starbtn{background:#222a2d;border-color:var(--line);color:#6b7570}
+html[data-theme="dark"] .starbtn:hover{background:#332c14;border-color:#5b4d20;color:#e8cd7a}
+html[data-theme="dark"] .starbtn.on{background:var(--t1);border-color:var(--t1);color:#1b1408}
+#view-learn .faceacts,#view-revise .faceacts{position:absolute;top:16px;right:16px;z-index:4;
+  display:flex;gap:7px}
+#view-learn .front .speaker,#view-revise .front .speaker{position:static}
+#view-track .starred{color:var(--t1);font-size:11px}
+#view-track .mstr{color:var(--tk-know);font-size:11px;font-weight:800}
+
+/* two ways to revise */
+#view-revise .startrow{gap:10px;flex-wrap:wrap}
+#view-revise .startbtn.alt{background:var(--card);color:var(--accent-d);border-color:var(--accent)}
+#view-revise .startbtn.alt:hover{background:var(--accent-soft);color:var(--accent-d)}
+html[data-theme="dark"] #view-revise .startbtn.alt{background:#222a2d;color:#7fd3ab;border-color:var(--accent)}
+html[data-theme="dark"] #view-revise .startbtn.alt:hover{background:#2a3a34;color:#9ee0bd}
+#view-revise .startnote{text-align:center;font-size:12px;color:var(--faint);margin-top:9px}
+@media (max-width:760px){
+  #view-revise .startrow{flex-direction:column}
+  #view-revise .startbtn{width:100%}
+  .starbtn{width:32px;height:32px;font-size:14px}
+}
+
 /* ============================================================
    MOBILE
    The app bar alone ran to 700px on a 375px screen, which is why
@@ -1311,6 +1339,8 @@ if(!store.tsK)store.tsK={};
 if(!store.tsS)store.tsS={};
 if(!store.fresh)store.fresh={};   /* words only recently learned */
 if(!store.tsF)store.tsF={};
+if(!store.star)store.star={};     /* words starred for extra attention */
+if(!store.tsR)store.tsR={};
 if(!store.sync)store.sync={url:'',code:''};
 
 /* one-time repair: existing installs may hold values with no clock */
@@ -1319,6 +1349,7 @@ if(!store.sync)store.sync={url:'',code:''};
   for(const k in store.know)if(!store.tsK[k]){store.tsK[k]=base;fixed++;}
   for(const k in store.status)if(!store.tsS[k]){store.tsS[k]=base;fixed++;}
   for(const k in store.fresh)if(!store.tsF[k]){store.tsF[k]=base;fixed++;}
+  for(const k in store.star)if(!store.tsR[k]){store.tsR[k]=base;fixed++;}
   if(fixed)persist();
 })();
 
@@ -1328,6 +1359,10 @@ const freshOf=w=>!!store.fresh[w];
 function setFresh(w,val){
   if(val)store.fresh[w]=1;else delete store.fresh[w];
   store.tsF[w]=Date.now();persist();syncSoon();}
+const starOf=w=>!!store.star[w];
+function setStar(w,val){
+  if(val)store.star[w]=1;else delete store.star[w];
+  store.tsR[w]=Date.now();persist();syncSoon();}
 function setStatus(w,st){if(st==null)delete store.status[w];else store.status[w]=st;
   store.tsS[w]=Date.now();persist();syncSoon();}
 function setKnow(w,val){if(store.know[w]===val)delete store.know[w];else store.know[w]=val;
@@ -1401,8 +1436,8 @@ async function deriveKey(code){
 }
 function endpoint(){return serverUrl().replace(/\/+$/,'')+'/s/'+SYNC.key;}
 function payload(){
-  return{v:1,know:store.know,status:store.status,fresh:store.fresh,
-         tsK:store.tsK,tsS:store.tsS,tsF:store.tsF,
+  return{v:1,know:store.know,status:store.status,fresh:store.fresh,star:store.star,
+         tsK:store.tsK,tsS:store.tsS,tsF:store.tsF,tsR:store.tsR,
          settings:S,updatedAt:Date.now()};
 }
 /* Per-word last-write-wins.
@@ -1426,6 +1461,7 @@ function mergeRemote(r){
   pass(store.know,store.tsK,r.know,r.tsK);
   pass(store.status,store.tsS,r.status,r.tsS);
   pass(store.fresh,store.tsF,r.fresh,r.tsF);
+  pass(store.star,store.tsR,r.star,r.tsR);
   return n;
 }
 async function syncPull({quiet}={}){
@@ -1588,7 +1624,10 @@ function route(){
   const h=location.hash.replace(/^#\/?/,'');const[v,a]=h.split('/');
   window.scrollTo(0,0);
   if(v==='track'){setMode('track');return;}
-  if(v==='revise'){setMode('revise');return a==='quiz'?renderReviseQuiz():renderRevise();}
+  if(v==='revise'){setMode('revise');
+    if(a==='quiz')return renderReviseQuiz();
+    if(a==='cards')return renderReviseCards();
+    return renderRevise();}
   setMode('learn');
   if(v==='study')return renderStudy(+a);
   if(v==='quiz')return renderQuiz(+a);
@@ -1756,11 +1795,16 @@ function renderHome(){
 
 function renderStudy(gi){
   const groups=activeGroups();const words=groups[gi];if(!words)return go('#/');
+  return cardDeck({host:app,words,title:`Study · Day ${gi+1}`,backLabel:'← Days',back:'#/'});
+}
+/* shared flashcard deck: used by Learn's study days and Revise's card run */
+function cardDeck({host,words,title,backLabel,back}){
+  const app=host;
   let i=0,flipped=false;
   app.innerHTML='';app.classList.add('studying');
   const head=el('div','subhead');
-  const back=el('button','back','← Days');back.onclick=()=>go('#/');
-  head.appendChild(back);head.appendChild(el('h2',null,`Study · Day ${gi+1}`));
+  const bk=el('button','back',backLabel);bk.onclick=()=>go(back);
+  head.appendChild(bk);head.appendChild(el('h2',null,title));
   const counter=el('div','counter');head.appendChild(counter);head.appendChild(el('div','spacer'));
   app.appendChild(head);
 
@@ -1800,14 +1844,19 @@ function renderStudy(gi){
   const FPOS=[{top:'13%',left:'8%'},{top:'16%',right:'8%'},{bottom:'20%',left:'10%'},{bottom:'14%',right:'9%'}];
   function draw(){
     const w=words[i];const st=statusOf(w.w);
-    const front=flip.querySelector('.front'),back=flip.querySelector('.back');
-    front.className='face front ft'+w.t;front.innerHTML='';back.innerHTML='';
+    const front=flip.querySelector('.front'),rear=flip.querySelector('.back');
+    front.className='face front ft'+w.t;front.innerHTML='';rear.innerHTML='';
     front.appendChild(el('div','frame'));
     const tb=el('div','tierbadge');tb.appendChild(tierPill(w.t));
     const kn=knowOf(w.w);
     if(kn)tb.appendChild(el('span','pill know-'+kn,kn==='know'?'known':'to learn'));
     front.appendChild(tb);
-    const sp=el('button','speaker','🔊');sp.title='Pronounce';sp.onclick=e=>{e.stopPropagation();speak(w.w);};front.appendChild(sp);
+    const fa=el('div','faceacts');
+    const st1=el('button','starbtn'+(starOf(w.w)?' on':''),'★');
+    st1.title=starOf(w.w)?'Starred — click to unstar':'Star this word';
+    st1.onclick=e=>{e.stopPropagation();setStar(w.w,!starOf(w.w));draw();};
+    const sp=el('button','speaker','🔊');sp.title='Pronounce';sp.onclick=e=>{e.stopPropagation();speak(w.w);};
+    fa.appendChild(st1);fa.appendChild(sp);front.appendChild(fa);
     (w.s||[]).slice(0,4).forEach((s,idx)=>{const f=el('div','floater f'+idx,s);const p=FPOS[idx];for(const k in p)f.style[k]=p[k];front.appendChild(f);});
     front.appendChild(el('div','word',w.w));
     front.appendChild(el('div','hint','Spacebar or click to reveal'));
@@ -1816,18 +1865,21 @@ function renderStudy(gi){
     bw.appendChild(el('h3',null,w.w));
     const bright=el('div','bright');
     bright.appendChild(el('span','pos',POSFULL[w.pos]||w.pos||''));
+    const st2=el('button','starbtn'+(starOf(w.w)?' on':''),'★');
+    st2.title=starOf(w.w)?'Starred — click to unstar':'Star this word';
+    st2.onclick=e=>{e.stopPropagation();setStar(w.w,!starOf(w.w));draw();};
     const sp2=el('button','speaker','🔊');sp2.title='Pronounce';sp2.onclick=e=>{e.stopPropagation();speak(w.w);};
-    bright.appendChild(sp2);bw.appendChild(bright);back.appendChild(bw);
-    back.appendChild(el('div','brule'));
+    bright.appendChild(st2);bright.appendChild(sp2);bw.appendChild(bright);rear.appendChild(bw);
+    rear.appendChild(el('div','brule'));
 
     if(!hasContent(w)){
       const ph=el('div','placeholder');
       ph.appendChild(el('b',null,'Flashcard not written yet'));
       ph.appendChild(el('span',null,'This tier '+w.t+' word is in your list, but its definition, synonyms, example and mnemonic haven’t been authored yet.'));
-      back.appendChild(ph);
+      rear.appendChild(ph);
     }else{
-      back.appendChild(el('div','slabel','Core Definition'));
-      back.appendChild(el('div','coredef',w.d));
+      rear.appendChild(el('div','slabel','Core Definition'));
+      rear.appendChild(el('div','coredef',w.d));
       const bgrid=el('div','bgrid');
       const bleft=el('div','bleft');
       bleft.appendChild(el('div','slabel','High-Level Synonyms'));
@@ -1835,7 +1887,7 @@ function renderStudy(gi){
       bleft.appendChild(el('div','slabel','Usage Example'));
       bleft.appendChild(el('div','example','“'+w.ex+'”'));
       const mn=el('div','mnemonic');mn.innerHTML='<div class="mlab">★ Mnemonic</div>';mn.appendChild(el('div','mtxt',w.n));
-      bgrid.appendChild(bleft);bgrid.appendChild(mn);back.appendChild(bgrid);
+      bgrid.appendChild(bleft);bgrid.appendChild(mn);rear.appendChild(bgrid);
     }
 
     flip.classList.toggle('flipped',flipped);
@@ -1941,9 +1993,11 @@ if(!S.rsize)S.rsize=20;
 const rapp=()=>$('rapp');
 function rTierOk(t){return !S.rtiers.length||S.rtiers.indexOf(t)>=0;}
 function freshCount(){let c=0;for(const k in store.fresh)if(store.know[k]==='know')c++;return c;}
+function starCount(){let c=0;for(const k in store.star)if(store.know[k]==='know')c++;return c;}
 function reviseePool(){
   let ws=WORDS.filter(w=>knowOf(w.w)==='know'&&rTierOk(w.t)&&hasContent(w));
   if(S.freshOnly)ws=ws.filter(w=>freshOf(w.w));
+  if(S.starOnly)ws=ws.filter(w=>starOf(w.w));
   return ws;
 }
 
@@ -1954,9 +2008,9 @@ function renderRevise(){
   const noCard=allKnown.filter(w=>rTierOk(w.t)&&!hasContent(w)).length;
 
   const intro=el('div','tabintro');
-  intro.innerHTML='Quiz yourself on words you have already marked as known, to catch any that are '
-    +'slipping. Choose your tiers and how many questions you want, or narrow it to <b>newly learned</b> '
-    +'words so you are not asked about ones you have known for years.';
+  intro.innerHTML='Go back over words you have already marked as known, to catch any that are slipping. '
+    +'Filter by tier, by <b>newly learned</b>, or by the words you have <b>starred</b> \u2605 \u2014 then either '
+    +'take a quiz or flip through them as flashcards.';
   a.appendChild(intro);
 
   const panel=el('div','panel');
@@ -2001,6 +2055,22 @@ function renderRevise(){
     : 'Nothing flagged yet — use ✦ in Track, or “Update tracker” in Learn.'));
   ctrls.appendChild(rf);
 
+  /* starred filter */
+  const rs=el('div','crow');rs.appendChild(el('div','lab','Starred'));
+  const nStar=starCount();
+  const canStar=nStar>0;
+  const stg=el('div','toggle'+(S.starOnly?' on':'')+(canStar?'':' disabled'));
+  stg.innerHTML='<span class="sw"></span>';
+  stg.appendChild(el('span',null,'Only starred words'));
+  stg.onclick=()=>{if(!canStar){alert('No words are starred yet.\n\n'
+      +'Tap the ★ on any flashcard — in Learn, in Revise, or from a word in Track.');return;}
+    S.starOnly=!S.starOnly;persist();renderRevise();};
+  rs.appendChild(stg);
+  rs.appendChild(el('div','filestat',canStar
+    ? `${nStar} of your known words are starred`
+    : 'Nothing starred yet — tap ★ on any flashcard.'));
+  ctrls.appendChild(rs);
+
   const r2=el('div','crow');r2.appendChild(el('div','lab','Questions'));
   const dsel=el('div','daysel');
   [10,20,50,'All'].forEach(n=>{
@@ -2016,7 +2086,7 @@ function renderRevise(){
 
   if(!pool.length){
     a.appendChild(el('div','empty',
-      S.freshOnly ? 'No newly learned words in these tiers. Turn the filter off or pick more tiers.'
+      (S.freshOnly||S.starOnly) ? 'Nothing matches these filters. Turn one off or pick more tiers.'
       : allKnown.length ? 'No known words in these tiers. Pick more tiers above.'
       : 'Nothing to revise yet — mark some words as known in Track first.'));
     return;
@@ -2024,11 +2094,24 @@ function renderRevise(){
   if(noCard)a.appendChild(el('div','qnote',`${noCard} known word${noCard===1?'':'s'} skipped — no flashcard content yet.`));
 
   const go1=el('div','startrow');
-  const b=el('button','startbtn','Start revision quiz');
-  b.onclick=()=>go('#/revise/quiz');
-  go1.appendChild(b);a.appendChild(go1);
+  const bq=el('button','startbtn','Start quiz');
+  bq.title='Multiple-choice questions drawn from the selection above';
+  bq.onclick=()=>go('#/revise/quiz');
+  const bc=el('button','startbtn alt','Flashcards');
+  bc.title='Flip through every selected word as a flashcard';
+  bc.onclick=()=>go('#/revise/cards');
+  go1.appendChild(bq);go1.appendChild(bc);a.appendChild(go1);
+  a.appendChild(el('div','startnote',
+    `Quiz asks up to ${S.rsize?Math.min(S.rsize,pool.length):pool.length} questions · `
+    +`Flashcards walk through all ${pool.length}`));
 }
 
+function renderReviseCards(){
+  const pool=reviseePool();
+  if(!pool.length)return go('#/revise');
+  cardDeck({host:rapp(),words:shuffle(pool),title:'Revision cards',
+            backLabel:'← Revise',back:'#/revise'});
+}
 function renderReviseQuiz(){
   const pool=reviseePool();
   if(!pool.length)return go('#/revise');
@@ -2056,9 +2139,13 @@ function paintRow(w){
   n.classList.toggle('act',s==='dunno');
   if(fr)fr.classList.toggle('act',freshOf(w));
   const badges=e.querySelector('.badges');
+  const sb=badges.querySelector('.starred');
+  if(starOf(w)&&!sb){const sp=document.createElement('span');sp.className='starred';
+    sp.title='Starred';sp.textContent='★';badges.insertBefore(sp,badges.querySelector('.tier'));}
+  else if(!starOf(w)&&sb)sb.remove();
   const star=badges.querySelector('.mstr');
   if(st==='mastered'&&!star){
-    const sp=document.createElement('span');sp.className='mstr';sp.title='Mastered in Learn';sp.textContent='★';
+    const sp=document.createElement('span');sp.className='mstr';sp.title='Mastered in Learn';sp.textContent='✓';
     badges.insertBefore(sp,badges.querySelector('.tier'));
   }else if(st!=='mastered'&&star)star.remove();
 }
@@ -2085,6 +2172,10 @@ function openPeek(word){
   if(st)pills.appendChild(el('span','pill status-'+st,st==='mastered'?'mastered':'learning'));
   h.appendChild(pills);
   hd.appendChild(h);
+  const stb=el('button','starbtn'+(starOf(w.w)?' on':''),'★');
+  stb.title=starOf(w.w)?'Starred — click to unstar':'Star this word';
+  stb.onclick=()=>{setStar(w.w,!starOf(w.w));paintRow(w.w);openPeek(word);};
+  hd.appendChild(stb);
   const sp=el('button','speaker','🔊');sp.title='Pronounce';sp.onclick=()=>speak(w.w);
   hd.appendChild(sp);
   const x=el('button','peekx','✕');x.title='Close (Esc)';x.onclick=closePeek;
@@ -2153,7 +2244,8 @@ function renderTrack(){
     if(o.g)b+='<span class="src g" title="GregMat Vocab Mountain">G</span>';
     if(o.m)b+='<span class="src m" title="Magoosh flashcards">M</span>';
     if(o.b)b+='<span class="src b" title="Barron\'s 333 high-frequency">B</span>';
-    if(st==='mastered')b+='<span class="mstr" title="Mastered in Learn">★</span>';
+    if(st==='mastered')b+='<span class="mstr" title="Mastered in Learn">✓</span>';
+    if(starOf(w))b+='<span class="starred" title="Starred">★</span>';
     b+='<span class="tier t'+o.t+'" title="Priority tier '+o.t+'">'+o.t+'</span>';
     e.innerHTML='<button class="w'+(hasContent(o)?'':' nocard')+'" title="'+
       (hasContent(o)?'Show the flashcard':'No flashcard written yet')+'"></button>'+
@@ -2211,8 +2303,8 @@ $('reset').onclick=()=>{if(confirm('Clear all known/unknown marks? (Mastery prog
 $('backup').onclick=()=>{
   download('tlr_gre_vocab_backup.json',JSON.stringify({
     app:'vocabularize',v:1,savedAt:new Date().toISOString(),
-    know:store.know,status:store.status,fresh:store.fresh,
-    tsK:store.tsK,tsS:store.tsS,tsF:store.tsF,settings:S}, null, 1));
+    know:store.know,status:store.status,fresh:store.fresh,star:store.star,
+    tsK:store.tsK,tsS:store.tsS,tsF:store.tsF,tsR:store.tsR,settings:S}, null, 1));
   flash();
 };
 $('restore').onclick=()=>$('fileIn').click();
@@ -2220,8 +2312,9 @@ $('fileIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return
   r.onload=()=>{try{
     const obj=JSON.parse(r.result)||{};
     if(obj.know||obj.status){
-      store.know=obj.know||{};store.status=obj.status||{};store.fresh=obj.fresh||{};
-      store.tsK=obj.tsK||{};store.tsS=obj.tsS||{};store.tsF=obj.tsF||{};
+      store.know=obj.know||{};store.status=obj.status||{};
+      store.fresh=obj.fresh||{};store.star=obj.star||{};
+      store.tsK=obj.tsK||{};store.tsS=obj.tsS||{};store.tsF=obj.tsF||{};store.tsR=obj.tsR||{};
       if(obj.settings)Object.assign(S,obj.settings);
     }else{  /* older know/dunno-only export */
       const km={};for(const k in obj){const v=String(obj[k]).toLowerCase();if(v==='know'||v==='dunno')km[k]=v;}
@@ -2232,6 +2325,7 @@ $('fileIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return
     for(const k in store.know)if(!store.tsK[k])store.tsK[k]=now;
     for(const k in store.status)if(!store.tsS[k])store.tsS[k]=now;
     for(const k in store.fresh)if(!store.tsF[k])store.tsF[k]=now;
+    for(const k in store.star)if(!store.tsR[k])store.tsR[k]=now;
     persist();updateTrackStats();renderTrack();route();
     const nk=Object.keys(store.know).length,ns=Object.keys(store.status).length;
     alert(`Restored — ${nk} known/unknown mark${nk===1?'':'s'} and ${ns} mastery mark${ns===1?'':'s'}.`);
