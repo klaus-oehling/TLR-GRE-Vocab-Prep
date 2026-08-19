@@ -331,13 +331,13 @@ body.track-mode{background:var(--tk-bg)}
 #view-learn .tierbtn.tb2.on{background:var(--t2)}
 #view-learn .tierbtn.tb3.on{background:#b08d57}
 #view-learn .tierbtn.tb4.on{background:#8a8378}
-#view-learn .pill.t3{background:#f6efe2;color:#8a6a34;border:1px solid #e6d6b8}
-#view-learn .pill.t4{background:#eeecea;color:#6d675e;border:1px solid #dcd8d2}
-#view-learn .front.ft2 .frame{border-color:var(--t2line)}
-#view-learn .front.ft3 .frame{border-color:#e6d6b8}
-#view-learn .front.ft4 .frame{border-color:#dcd8d2}
-#view-learn .pill.know-know{background:var(--good-bg);color:var(--good);border:1px solid var(--good-line)}
-#view-learn .pill.know-dunno{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad-line)}
+#view-learn .pill.t3,#view-revise .pill.t3{background:#f6efe2;color:#8a6a34;border:1px solid #e6d6b8}
+#view-learn .pill.t4,#view-revise .pill.t4{background:#eeecea;color:#6d675e;border:1px solid #dcd8d2}
+#view-learn .front.ft2 .frame,#view-revise .front.ft2 .frame{border-color:var(--t2line)}
+#view-learn .front.ft3 .frame,#view-revise .front.ft3 .frame{border-color:#e6d6b8}
+#view-learn .front.ft4 .frame,#view-revise .front.ft4 .frame{border-color:#dcd8d2}
+#view-learn .pill.know-know,#view-revise .pill.know-know{background:var(--good-bg);color:var(--good);border:1px solid var(--good-line)}
+#view-learn .pill.know-dunno,#view-revise .pill.know-dunno{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad-line)}
 
 /* sync button + toggle row */
 #view-learn .syncbtn{border:1px solid var(--accent);background:var(--accent);color:#fff;font-weight:700;
@@ -345,12 +345,12 @@ body.track-mode{background:var(--tk-bg)}
   box-shadow:0 4px 12px rgba(107,77,230,.25)}
 #view-learn .syncbtn:hover{background:var(--accent-d)}
 #view-learn .todoflag{color:#a08128;font-weight:700}
-#view-learn .qnote{background:var(--learn-bg);border:1px solid var(--learn-line);color:var(--learn-ink);
+#view-learn .qnote,#view-revise .qnote{background:var(--learn-bg);border:1px solid var(--learn-line);color:var(--learn-ink);
   border-radius:11px;padding:9px 13px;font-size:12.5px;font-weight:600;margin-bottom:14px}
-#view-learn .placeholder{background:var(--learn-bg);border:1px dashed var(--learn-line);border-radius:13px;
+#view-learn .placeholder,#view-revise .placeholder{background:var(--learn-bg);border:1px dashed var(--learn-line);border-radius:13px;
   padding:16px;display:flex;flex-direction:column;gap:6px;color:var(--learn-ink)}
-#view-learn .placeholder b{font-size:14px}
-#view-learn .placeholder span{font-size:12.5px;font-weight:400;line-height:1.5}
+#view-learn .placeholder b,#view-revise .placeholder b{font-size:14px}
+#view-learn .placeholder span,#view-revise .placeholder span{font-size:12.5px;font-weight:400;line-height:1.5}
 
 /* track badges */
 #view-track .mstr{color:#b8862f;font-size:11px;font-weight:800}
@@ -475,37 +475,40 @@ body.track-mode{background:var(--tk-bg)}
 #view-learn .gmeta .lrn{color:#a8801f}
 
 /* ================= study: one tight column, no scrolling ================= */
-#view-learn .subhead{margin-bottom:10px}
-#view-learn .navbox{background:var(--card);border:1px solid var(--line);border-radius:14px;
+#view-learn .subhead,no scrolling ================= */
+#view-revise .subhead{margin-bottom:10px}
+#view-learn .navbox,#view-revise .navbox{background:var(--card);border:1px solid var(--line);border-radius:14px;
   padding:9px 11px;margin-bottom:12px;box-shadow:var(--shadow)}
-#view-learn .navbox .track{margin-bottom:9px}
-#view-learn .navgrid{display:flex;flex-wrap:wrap;gap:4px;max-height:84px;overflow-y:auto;
+#view-learn .navbox .track,#view-revise .navbox .track{margin-bottom:9px}
+#view-learn .navgrid,#view-revise .navgrid{display:flex;flex-wrap:wrap;gap:4px;max-height:84px;overflow-y:auto;
   scrollbar-width:thin}
-#view-learn .wn{min-width:25px;height:24px;padding:0 4px;border-radius:6px;border:1px solid var(--line);
+#view-learn .wn,#view-revise .wn{min-width:25px;height:24px;padding:0 4px;border-radius:6px;border:1px solid var(--line);
   background:var(--line2);color:var(--muted);font-family:inherit;font-size:10.5px;font-weight:700;
   cursor:pointer;transition:.1s;flex-shrink:0}
-#view-learn .wn:hover{border-color:var(--accent);color:var(--accent-d)}
-#view-learn .wn.m{background:var(--good-bg);border-color:var(--good-line);color:var(--good)}
-#view-learn .wn.l{background:var(--learn-bg);border-color:var(--learn-line);color:var(--learn-ink)}
-#view-learn .wn.cur{background:var(--accent);border-color:var(--accent);color:#fff;
+#view-learn .wn:hover,#view-revise .wn:hover{border-color:var(--accent);color:var(--accent-d)}
+#view-learn .wn.m,#view-revise .wn.m{background:var(--good-bg);border-color:var(--good-line);color:var(--good)}
+#view-learn .wn.l,#view-revise .wn.l{background:var(--learn-bg);border-color:var(--learn-line);color:var(--learn-ink)}
+#view-learn .wn.cur,#view-revise .wn.cur{background:var(--accent);border-color:var(--accent);color:#fff;
   box-shadow:0 0 0 2px var(--accent-soft)}
 /* card shrinks on short screens so the whole flow stays above the fold */
-#view-learn .flip-inner{min-height:clamp(320px,46vh,430px)}
-#view-learn .controls{margin-top:12px}
-#view-learn .nav{width:46px;height:46px}
+#view-learn .flip-inner,/* card shrinks on short screens so the whole flow stays above the fold */
+#view-revise .flip-inner{min-height:clamp(320px,46vh,430px)}
+#view-learn .controls,#view-revise .controls{margin-top:12px}
+#view-learn .nav,#view-revise .nav{width:46px;height:46px}
 
 /* ================= learning / mastered buttons ================= */
 /* off = faint tint, hover = the colour it will become, on = full colour + bulk */
-#view-learn .mbtn{font-weight:600;transition:background .12s,border-color .12s,box-shadow .12s,transform .08s}
+#view-learn .mbtn,on = full colour + bulk */
+#view-revise .mbtn{font-weight:600;transition:background .12s,border-color .12s,box-shadow .12s,transform .08s}
 
-#view-learn .mbtn.learn{background:#fdfaf1;border-color:#f2ead6;color:#9a8a63}
-#view-learn .mbtn.learn:hover{background:#eab94a;border-color:#d9a52e;color:#3f3108}
-#view-learn .mbtn.learn.on{background:#eab94a;border-color:#d9a52e;color:#3f3108;font-weight:800;
+#view-learn .mbtn.learn,#view-revise .mbtn.learn{background:#fdfaf1;border-color:#f2ead6;color:#9a8a63}
+#view-learn .mbtn.learn:hover,#view-revise .mbtn.learn:hover{background:#eab94a;border-color:#d9a52e;color:#3f3108}
+#view-learn .mbtn.learn.on,#view-revise .mbtn.learn.on{background:#eab94a;border-color:#d9a52e;color:#3f3108;font-weight:800;
   transform:translateY(-1px);box-shadow:0 0 0 3px #faeecd,0 6px 16px rgba(217,165,46,.34)}
 
-#view-learn .mbtn.master{background:#f4fbf7;border-color:#dcefe5;color:#7a9a8b}
-#view-learn .mbtn.master:hover{background:var(--good);border-color:var(--good);color:#fff;filter:none}
-#view-learn .mbtn.master.on{background:var(--good);border-color:var(--good);color:#fff;font-weight:800;
+#view-learn .mbtn.master,#view-revise .mbtn.master{background:#f4fbf7;border-color:#dcefe5;color:#7a9a8b}
+#view-learn .mbtn.master:hover,#view-revise .mbtn.master:hover{background:var(--good);border-color:var(--good);color:#fff;filter:none}
+#view-learn .mbtn.master.on,#view-revise .mbtn.master.on{background:var(--good);border-color:var(--good);color:#fff;font-weight:800;
   transform:translateY(-1px);box-shadow:0 0 0 3px var(--good-bg),0 6px 16px rgba(31,157,107,.34)}
 
 /* ================= app-bar tools ================= */
@@ -523,24 +526,25 @@ body.track-mode{background:var(--tk-bg)}
 /* reserve the page scrollbar always, so flipping to a taller face can't
    toggle it and reflow the whole column */
 html{overflow-y:scroll;scrollbar-gutter:stable}
-#view-learn .flip,#view-learn .flip-inner,#view-learn .face{width:100%;max-width:100%}
+#view-learn .flip,#view-learn .flip-inner,#view-learn .face,#view-revise .flip,#view-revise .flip-inner,#view-revise .face{width:100%;max-width:100%}
 
 /* ================= study view: pull everything up ================= */
-#view-learn #app.studying{padding-top:8px}
-#view-learn #app.studying .subhead{margin-bottom:7px}
-#view-learn #app.studying .subhead h2{font-size:15px}
-#view-learn #app.studying .navbox{padding:7px 9px;margin-bottom:9px;border-radius:12px}
-#view-learn #app.studying .navbox .track{margin-bottom:7px}
-#view-learn #app.studying .navgrid{max-height:80px}
-#view-learn #app.studying .flip-inner{min-height:clamp(286px,40vh,384px)}
-#view-learn #app.studying .face.back{padding:18px 20px}
-#view-learn #app.studying .controls{margin-top:10px}
-#view-learn #app.studying .nav{width:44px;height:44px;font-size:18px}
-#view-learn #app.studying .mbtn{padding:11px;font-size:14px}
-#view-learn #app.studying .word{font-size:clamp(40px,7vw,64px)}
+#view-learn .studying,/* ================= study view: pull everything up ================= */
+#view-revise .studying{padding-top:8px}
+#view-learn .studying .subhead,#view-revise .studying .subhead{margin-bottom:7px}
+#view-learn .studying .subhead h2,#view-revise .studying .subhead h2{font-size:15px}
+#view-learn .studying .navbox,#view-revise .studying .navbox{padding:7px 9px;margin-bottom:9px;border-radius:12px}
+#view-learn .studying .navbox .track,#view-revise .studying .navbox .track{margin-bottom:7px}
+#view-learn .studying .navgrid,#view-revise .studying .navgrid{max-height:80px}
+#view-learn .studying .flip-inner,#view-revise .studying .flip-inner{min-height:clamp(286px,40vh,384px)}
+#view-learn .studying .face.back,#view-revise .studying .face.back{padding:18px 20px}
+#view-learn .studying .controls,#view-revise .studying .controls{margin-top:10px}
+#view-learn .studying .nav,#view-revise .studying .nav{width:44px;height:44px;font-size:18px}
+#view-learn .studying .mbtn,#view-revise .studying .mbtn{padding:11px;font-size:14px}
+#view-learn .studying .word,#view-revise .studying .word{font-size:clamp(40px,7vw,64px)}
 @media (max-height:760px){
-  #view-learn #app.studying .navgrid{max-height:56px}
-  #view-learn #app.studying .flip-inner{min-height:clamp(260px,34vh,340px)}
+  #view-learn .studying .navgrid{max-height:56px}
+  #view-learn .studying .flip-inner{min-height:clamp(260px,34vh,340px)}
 }
 
 /* ================= reset in the corner of the settings box ================= */
@@ -559,16 +563,19 @@ html{overflow-y:scroll;scrollbar-gutter:stable}
 /* Never scroll inside a face. Both faces share one grid cell, so the cell grows
    to fit the taller (back) content and the two faces stay exactly the same size.
    An inner scrollbar would make the back 15px narrower than the front. */
-#view-learn .face.back{overflow:hidden;scrollbar-gutter:auto}
-#view-learn .flip-inner{height:auto}
+#view-learn .face.back,so the cell grows
+   to fit the taller (back) content and the two faces stay exactly the same size.
+   An inner scrollbar would make the back 15px narrower than the front. */
+#view-revise .face.back{overflow:hidden;scrollbar-gutter:auto}
+#view-learn .flip-inner,#view-revise .flip-inner{height:auto}
 /* keep long definitions compact instead of overflowing on short screens */
 @media (max-height:820px){
-  #view-learn #app.studying .coredef{font-size:14px;margin-bottom:13px}
-  #view-learn #app.studying .example{font-size:12.5px;padding:10px 12px}
-  #view-learn #app.studying .mnemonic{padding:12px 14px}
-  #view-learn #app.studying .mnemonic .mtxt{font-size:12.5px}
-  #view-learn #app.studying .bgrid{gap:12px}
-  #view-learn #app.studying .bword h3{font-size:26px}
+  #view-learn .studying .coredef{font-size:14px;margin-bottom:13px}
+  #view-learn .studying .example{font-size:12.5px;padding:10px 12px}
+  #view-learn .studying .mnemonic{padding:12px 14px}
+  #view-learn .studying .mnemonic .mtxt{font-size:12.5px}
+  #view-learn .studying .bgrid{gap:12px}
+  #view-learn .studying .bword h3{font-size:26px}
 }
 #syncBox .linkbtn{background:none;border:0;color:var(--accent-d);font-family:inherit;font-size:12px;
   font-weight:700;cursor:pointer;padding:0;margin:-8px 0 14px;text-decoration:underline}
@@ -612,10 +619,10 @@ html{overflow-y:scroll;scrollbar-gutter:stable}
 #view-learn .pill.t2,#view-revise .pill.t2{background:var(--t2bg);color:#5d646a;border:1px solid var(--t2line)}
 #view-learn .pill.t3,#view-revise .pill.t3{background:var(--t3bg);color:#7d4d26;border:1px solid var(--t3line)}
 #view-learn .pill.t4,#view-revise .pill.t4{background:var(--t4bg);color:#4a525b;border:1px solid var(--t4line)}
-#view-learn .front.ft1 .frame{border-color:var(--t1line)}
-#view-learn .front.ft2 .frame{border-color:var(--t2line)}
-#view-learn .front.ft3 .frame{border-color:var(--t3line)}
-#view-learn .front.ft4 .frame{border-color:var(--t4line)}
+#view-learn .front.ft1 .frame,#view-revise .front.ft1 .frame{border-color:var(--t1line)}
+#view-learn .front.ft2 .frame,#view-revise .front.ft2 .frame{border-color:var(--t2line)}
+#view-learn .front.ft3 .frame,#view-revise .front.ft3 .frame{border-color:var(--t3line)}
+#view-learn .front.ft4 .frame,#view-revise .front.ft4 .frame{border-color:var(--t4line)}
 #view-track .tier.t1{background:var(--tk-t1);color:#fff}
 #view-track .tier.t2{background:var(--tk-t2);color:#fff}
 #view-track .tier.t3{background:var(--tk-t3);color:#fff}
@@ -733,18 +740,18 @@ html[data-theme="dark"] #view-learn .mbtn,html[data-theme="dark"] #peekBox .peek
 html[data-theme="dark"] #syncBox .peekbtn.dunno,html[data-theme="dark"] #syncBox .sinput,
 html[data-theme="dark"] #view-learn .opt,html[data-theme="dark"] #view-revise .opt{
   background:#222a2d;color:var(--ink);border-color:var(--line)}
-html[data-theme="dark"] #view-learn .mbtn.learn{background:#2b2716;border-color:#4a3f1c;color:#d9c489}
-html[data-theme="dark"] #view-learn .mbtn.master{background:#182d25;border-color:#2f5142;color:#8ccdb0}
-html[data-theme="dark"] #view-learn .mbtn.learn.on{background:var(--learning);color:#241d06}
-html[data-theme="dark"] #view-learn .mbtn.master.on{background:var(--good);color:#0e211a}
-html[data-theme="dark"] #view-learn .wn{background:#222a2d;border-color:var(--line);color:var(--muted)}
+html[data-theme="dark"] #view-learn .mbtn.learn,html[data-theme="dark"] #view-revise .mbtn.learn{background:#2b2716;border-color:#4a3f1c;color:#d9c489}
+html[data-theme="dark"] #view-learn .mbtn.master,html[data-theme="dark"] #view-revise .mbtn.master{background:#182d25;border-color:#2f5142;color:#8ccdb0}
+html[data-theme="dark"] #view-learn .mbtn.learn.on,html[data-theme="dark"] #view-revise .mbtn.learn.on{background:var(--learning);color:#241d06}
+html[data-theme="dark"] #view-learn .mbtn.master.on,html[data-theme="dark"] #view-revise .mbtn.master.on{background:var(--good);color:#0e211a}
+html[data-theme="dark"] #view-learn .wn,html[data-theme="dark"] #view-revise .wn{background:#222a2d;border-color:var(--line);color:var(--muted)}
 html[data-theme="dark"] #view-track .word{background:var(--card)}
 html[data-theme="dark"] #view-track .word .w{color:var(--tk-ink)}
 html[data-theme="dark"] #view-track input[type=search],
 html[data-theme="dark"] #view-track .seg button,html[data-theme="dark"] #view-track .chip,
 html[data-theme="dark"] #view-track .util button{background:#222a2d;color:var(--tk-ink);border-color:var(--tk-line)}
 html[data-theme="dark"] .credit{border-top-color:var(--line)}
-html[data-theme="dark"] #view-learn .floater{color:#2e3a35;mix-blend-mode:normal}
+html[data-theme="dark"] #view-learn .floater,html[data-theme="dark"] #view-revise .floater{color:#2e3a35;mix-blend-mode:normal}
 html[data-theme="dark"] #banner{background:#33290f;border-bottom-color:#5c4a1c;color:#e8c976}
 
 /* toggle button */
@@ -775,11 +782,12 @@ html[data-theme="dark"] .themebtn{background:#222a2d;color:var(--ink)}
 #view-track .tier.t1,#view-track .tier.t2,#view-track .tier.t3{color:#1b1408}
 
 /* --- resting states were too faint to read --- */
-#view-learn .mbtn.master{color:#4d7566}
-#view-learn .mbtn.learn{color:#7d6c40}
-#view-learn .mbtn.master.on{color:#04160f}
-#view-learn .mbtn.learn.on{color:#231a03}
-#view-learn .wn.m{color:#1c6b49}
+#view-learn .mbtn.master,/* --- resting states were too faint to read --- */
+#view-revise .mbtn.master{color:#4d7566}
+#view-learn .mbtn.learn,#view-revise .mbtn.learn{color:#7d6c40}
+#view-learn .mbtn.master.on,#view-revise .mbtn.master.on{color:#04160f}
+#view-learn .mbtn.learn.on,#view-revise .mbtn.learn.on{color:#231a03}
+#view-learn .wn.m,#view-revise .wn.m{color:#1c6b49}
 .syncchip.off{color:var(--muted)}
 
 /* ============================================================
@@ -813,12 +821,13 @@ html[data-theme="dark"] #view-learn .tierbtn.tb4.on,html[data-theme="dark"] #vie
 html[data-theme="dark"] #view-track .tier.t4{color:#0f1315}
 
 /* status buttons in dark */
-html[data-theme="dark"] #view-learn .mbtn.master{color:#8ccdb0}
-html[data-theme="dark"] #view-learn .mbtn.learn{color:#d9c489}
-html[data-theme="dark"] #view-learn .wn.m{color:#7fd3ab}
-html[data-theme="dark"] #view-learn .wn.l{color:#e3c68a}
-html[data-theme="dark"] #view-learn .opt.correct{background:#173129;border-color:#2f5f4b;color:#9ee0bd}
-html[data-theme="dark"] #view-learn .opt.wrong{background:#3a221c;border-color:#6b3d31;color:#f0a894}
+html[data-theme="dark"] #view-learn .mbtn.master,/* status buttons in dark */
+html[data-theme="dark"] #view-revise .mbtn.master{color:#8ccdb0}
+html[data-theme="dark"] #view-learn .mbtn.learn,html[data-theme="dark"] #view-revise .mbtn.learn{color:#d9c489}
+html[data-theme="dark"] #view-learn .wn.m,html[data-theme="dark"] #view-revise .wn.m{color:#7fd3ab}
+html[data-theme="dark"] #view-learn .wn.l,html[data-theme="dark"] #view-revise .wn.l{color:#e3c68a}
+html[data-theme="dark"] #view-learn .opt.correct,html[data-theme="dark"] #view-revise .opt.correct{background:#173129;border-color:#2f5f4b;color:#9ee0bd}
+html[data-theme="dark"] #view-learn .opt.wrong,html[data-theme="dark"] #view-revise .opt.wrong{background:#3a221c;border-color:#6b3d31;color:#f0a894}
 html[data-theme="dark"] #view-revise .opt.correct{background:#173129;border-color:#2f5f4b;color:#9ee0bd}
 html[data-theme="dark"] #view-revise .opt.wrong{background:#3a221c;border-color:#6b3d31;color:#f0a894}
 html[data-theme="dark"] .syncchip.off{color:var(--muted)}
@@ -833,18 +842,24 @@ html[data-theme="dark"] #peekBox .example{color:#c9d1cd}
    ============================================================ */
 
 /* word-nav squares must show status as clearly as they do in light mode */
-html[data-theme="dark"] #view-learn .wn.m{background:#173129;border-color:#2f5f4b;color:#7fd3ab}
-html[data-theme="dark"] #view-learn .wn.l{background:#33290f;border-color:#5c4a1c;color:#e3c68a}
-html[data-theme="dark"] #view-learn .wn:hover{border-color:var(--accent);color:#7fd3ab;background:#2a3a34}
-html[data-theme="dark"] #view-learn .wn.cur:hover{background:var(--accent-d);color:#06180f}
+html[data-theme="dark"] #view-learn .wn.m,which outranks the plain :hover rules. Every
+   interactive state therefore needs restating here.
+   ============================================================ */
+
+/* word-nav squares must show status as clearly as they do in light mode */
+html[data-theme="dark"] #view-revise .wn.m{background:#173129;border-color:#2f5f4b;color:#7fd3ab}
+html[data-theme="dark"] #view-learn .wn.l,html[data-theme="dark"] #view-revise .wn.l{background:#33290f;border-color:#5c4a1c;color:#e3c68a}
+html[data-theme="dark"] #view-learn .wn:hover,html[data-theme="dark"] #view-revise .wn:hover{border-color:var(--accent);color:#7fd3ab;background:#2a3a34}
+html[data-theme="dark"] #view-learn .wn.cur:hover,html[data-theme="dark"] #view-revise .wn.cur:hover{background:var(--accent-d);color:#06180f}
 
 /* mark buttons: preview the colour on hover, as in light mode */
-html[data-theme="dark"] #view-learn .mbtn.learn:hover{
+html[data-theme="dark"] #view-learn .mbtn.learn:hover,as in light mode */
+html[data-theme="dark"] #view-revise .mbtn.learn:hover{
   background:var(--learning);border-color:var(--learning);color:#241d06}
-html[data-theme="dark"] #view-learn .mbtn.master:hover{
+html[data-theme="dark"] #view-learn .mbtn.master:hover,html[data-theme="dark"] #view-revise .mbtn.master:hover{
   background:var(--good);border-color:var(--good);color:#0e211a;filter:none}
-html[data-theme="dark"] #view-learn .mbtn.learn.on:hover{background:#e2ae49}
-html[data-theme="dark"] #view-learn .mbtn.master.on:hover{background:#5cc79a}
+html[data-theme="dark"] #view-learn .mbtn.learn.on:hover,html[data-theme="dark"] #view-revise .mbtn.learn.on:hover{background:#e2ae49}
+html[data-theme="dark"] #view-learn .mbtn.master.on:hover,html[data-theme="dark"] #view-revise .mbtn.master.on:hover{background:#5cc79a}
 
 /* remaining hover states */
 html[data-theme="dark"] #view-learn .btn.study:hover,html[data-theme="dark"] #view-revise .btn.study:hover{
@@ -1011,6 +1026,18 @@ html[data-theme="dark"] #view-revise .startbtn.alt:hover{background:#2a3a34;colo
   .starbtn{width:32px;height:32px;font-size:14px}
 }
 
+/* quiz progress squares: same look as the flashcard navigator, but not clickable */
+#view-learn .wn.qn,#view-revise .wn.qn{cursor:default}
+#view-learn .wn.qn:hover,#view-revise .wn.qn:hover{border-color:var(--line);color:var(--muted);background:var(--line2)}
+#view-learn .wn.qn.cur:hover,#view-revise .wn.qn.cur:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+#view-learn .wn.x,#view-revise .wn.x{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+#view-learn .wn.qn.m:hover,#view-revise .wn.qn.m:hover{background:var(--good-bg);border-color:var(--good-line);color:var(--good)}
+#view-learn .wn.qn.x:hover,#view-revise .wn.qn.x:hover{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+html[data-theme="dark"] #view-learn .wn.x,html[data-theme="dark"] #view-revise .wn.x{
+  background:#3a221c;border-color:#6b3d31;color:#f0a894}
+html[data-theme="dark"] #view-learn .wn.qn:hover,html[data-theme="dark"] #view-revise .wn.qn:hover{
+  background:#222a2d;border-color:var(--line);color:var(--muted)}
+
 /* ============================================================
    MOBILE
    The app bar alone ran to 700px on a 375px screen, which is why
@@ -1065,9 +1092,9 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
   #view-learn .nav{width:44px;height:44px;font-size:19px}
   #view-learn .mbtn{min-height:44px;font-size:13.5px;padding:10px 8px}
   #view-learn .wn{min-width:31px;height:31px;font-size:11px}
-  #view-learn #app.studying .wn{min-width:32px;height:32px}
+  #view-learn .studying .wn{min-width:32px;height:32px}
   #view-learn .navgrid{max-height:112px;gap:6px}
-  #view-learn #app.studying .navgrid{max-height:80px}
+  #view-learn .studying .navgrid{max-height:80px}
   #view-learn .speaker,#view-revise .speaker,#peekBox .speaker,#peekBox .peekx{
     width:34px;height:34px;font-size:14px}
   .credit{padding:22px 16px 30px}
@@ -1078,7 +1105,7 @@ body{overflow-x:clip}                     /* nothing may push the page sideways 
   #view-track input[type=search]{min-height:38px}
 
   /* ---- flashcard ---- */
-  #view-learn #app.studying .flip-inner{min-height:clamp(300px,44vh,380px)}
+  #view-learn .studying .flip-inner{min-height:clamp(300px,44vh,380px)}
   #view-learn .face.back{padding:16px 15px}
   #view-learn .bgrid{grid-template-columns:1fr;gap:12px}
   #view-learn .word{font-size:clamp(34px,10vw,52px);padding:0 14px}
@@ -1925,7 +1952,12 @@ function quizEngine({host,all,title,backLabel,back,replay}){
   head.appendChild(bk);head.appendChild(el('h2',null,title));
   const counter=el('div','counter');head.appendChild(counter);head.appendChild(el('div','spacer'));
   app.appendChild(head);
-  const track=el('div','track');const ti=el('i');track.appendChild(ti);app.appendChild(track);
+  /* same progress box as the flashcard deck: bar on top, one square per question */
+  const nav=el('div','navbox');
+  const track=el('div','track');const ti=el('i');track.appendChild(ti);
+  nav.appendChild(track);
+  const navGrid=el('div','navgrid');nav.appendChild(navGrid);
+  app.appendChild(nav);
   const wrap=el('div','qwrap');app.appendChild(wrap);
 
   if(!words.length){
@@ -1933,6 +1965,22 @@ function quizEngine({host,all,title,backLabel,back,replay}){
     return;
   }
   const qs=shuffle(words);let qi=0,score=0,locked=false;
+  let nextBtn=null;                /* held directly: an id would collide across views */
+  const outcome=new Array(qs.length).fill(null);   /* 'right' | 'wrong' | null */
+  const navBtns=qs.map((_,idx)=>{
+    const b=el('button','wn qn',String(idx+1));
+    b.disabled=true;                 /* progress only — jumping would break scoring */
+    navGrid.appendChild(b);return b;
+  });
+  function paintNav(){
+    navBtns.forEach((b,idx)=>{
+      const o=outcome[idx];
+      b.className='wn qn'+(o==='right'?' m':o==='wrong'?' x':'')+(idx===qi?' cur':'');
+      b.title=o?`Question ${idx+1} — ${o==='right'?'correct':'wrong'}`:`Question ${idx+1}`;
+    });
+    const cur=navBtns[qi];
+    if(cur&&cur.scrollIntoView)try{cur.scrollIntoView({block:'nearest',inline:'nearest'});}catch(e){}
+  }
   if(words.length<all.length){
     const n=all.length-words.length;
     wrap.appendChild(el('div','qnote',`${n} word${n===1?'':'s'} skipped — no flashcard content yet.`));
@@ -1942,6 +1990,7 @@ function quizEngine({host,all,title,backLabel,back,replay}){
   function drawQ(){
     locked=false;const w=qs[qi];
     counter.textContent=`${qi+1} / ${qs.length}`;ti.style.width=(qi/qs.length*100)+'%';
+    paintNav();
     const pool=shuffle(DEFS.filter(d=>d!==w.d)).slice(0,3);
     const opts=shuffle([w.d,...pool]);
     body.innerHTML='';
@@ -1957,18 +2006,21 @@ function quizEngine({host,all,title,backLabel,back,replay}){
     body.appendChild(list);
     const foot=el('div','qfoot');foot.appendChild(el('div','score',`Score ${score}`));
     const nx=el('button','next',qi===qs.length-1?'See results':'Next');nx.disabled=true;nx.id='qnext';
+    nextBtn=nx;
     nx.onclick=()=>{qi++;if(qi>=qs.length)return results();drawQ();};
     foot.appendChild(nx);body.appendChild(foot);
   }
   function choose(o,correct,w,list){
     if(locked)return;locked=true;list.classList.add('locked');
     [...list.children].forEach(k=>{if(k.querySelector('span:last-child').textContent===w.d)k.classList.add('correct');});
-    if(correct){o.classList.add('correct');score++;setStatus(w.w,'mastered');}
-    else{o.classList.add('wrong');if(statusOf(w.w)!=='mastered')setStatus(w.w,'learning');}
+    if(correct){o.classList.add('correct');score++;outcome[qi]='right';setStatus(w.w,'mastered');}
+    else{o.classList.add('wrong');outcome[qi]='wrong';if(statusOf(w.w)!=='mastered')setStatus(w.w,'learning');}
+    paintNav();
     body.querySelector('.score').textContent=`Score ${score}`;
-    $('qnext').disabled=false;ti.style.width=((qi+1)/qs.length*100)+'%';
+    if(nextBtn)nextBtn.disabled=false;ti.style.width=((qi+1)/qs.length*100)+'%';
   }
   function results(){
+    ti.style.width='100%';qi=qs.length;paintNav();
     const pct=Math.round(score/qs.length*100);
     body.innerHTML='';
     const r=el('div','result');
@@ -1981,7 +2033,7 @@ function quizEngine({host,all,title,backLabel,back,replay}){
   document.onkeydown=e=>{if(location.hash.indexOf('quiz')<0)return;
     const map={a:0,b:1,c:2,d:3};const k=e.key.toLowerCase();
     if(k in map){const b=body.querySelectorAll('.opt')[map[k]];if(b&&!locked)b.click();}
-    else if(e.key==='Enter'){const n=$('qnext');if(n&&!n.disabled)n.click();}};
+    else if(e.key==='Enter'){if(nextBtn&&!nextBtn.disabled)nextBtn.click();}};
   drawQ();
 }
 
